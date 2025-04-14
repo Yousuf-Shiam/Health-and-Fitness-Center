@@ -8,6 +8,9 @@ import TrainerHomePage from './pages/trainers/TrainerHomePage';
 import NutritionistHomePage from './pages/nutritionists/NutritionistHomePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ClientProfile from './pages/clients/ClientProfile';
+import NutritionistProfile from './pages/nutritionists/NutritionistProfile';
+import DietProgramCreation from './pages/nutritionists/DietProgramCreation';
+
 
 
 function App() {
@@ -34,7 +37,7 @@ function App() {
           }
         />
 
-        
+
         <Route
           path="/trainer-home"
           element={
@@ -51,8 +54,24 @@ function App() {
             </ProtectedRoute>
           }
         />
+              <Route
+          path="/nutritionist-profile"
+          element={
+            <ProtectedRoute>
+              <NutritionistProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/nutritionist-create-program"
+          element={
+            <ProtectedRoute>
+              <DietProgramCreation />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-    </Router>
+      </Router>
   );
 }
 

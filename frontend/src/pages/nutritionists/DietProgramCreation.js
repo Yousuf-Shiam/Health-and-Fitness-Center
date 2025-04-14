@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import {jwtDecode} from 'jwt-decode'; // Import jwt-decode
+import React, { useState } from 'react';
 import NutritionistNavBar from './NutritionistNavBar'; // Import the NutritionistNavBar component
 import Footer from '../../components/Footer';
 
-function NutritionistHomePage() {
-  const [nutritionistName, setNutritionistName] = useState(''); // State to store the nutritionist's name
+function DietProgramCreation() {
   const [programData, setProgramData] = useState({
     name: '',
     description: '',
@@ -13,39 +11,6 @@ function NutritionistHomePage() {
   });
 
   const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    const fetchNutritionistName = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          console.error('No token found');
-          return;
-        }
-
-        // Decode the token to get the user ID
-        const decoded = jwtDecode(token);
-
-        // Fetch user details using the ID from the decoded token
-        const response = await fetch(`http://localhost:5000/api/users/${decoded.id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch nutritionist name');
-        }
-
-        const userData = await response.json();
-        setNutritionistName(userData.name); // Set the nutritionist's name
-      } catch (error) {
-        console.error('Error fetching nutritionist name:', error);
-      }
-    };
-
-    fetchNutritionistName();
-  }, []);
 
   const handleChange = (e) => {
     setProgramData({ ...programData, [e.target.name]: e.target.value });
@@ -143,8 +108,8 @@ function NutritionistHomePage() {
     <>
       <NutritionistNavBar /> {/* Add the NutritionistNavBar */}
       <div style={styles.container}>
-        <h1 style={styles.heading}>Welcome, {nutritionistName}!</h1>
-        <p style={styles.subheading}>Create a new diet program for your clients.</p>
+        <h1 style={styles.heading}>Create a Diet Program</h1>
+        <p style={styles.subheading}>Fill out the form below to create a new diet program for your clients.</p>
         <form style={styles.form} onSubmit={handleSubmit}>
           <input
             type="text"
@@ -197,4 +162,4 @@ function NutritionistHomePage() {
   );
 }
 
-export default NutritionistHomePage;
+export default DietProgramCreation;
