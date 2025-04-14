@@ -1,4 +1,6 @@
 import React from 'react';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer'; // Assuming you have a Footer component
 
 function HomePage() {
   const styles = {
@@ -7,12 +9,13 @@ function HomePage() {
       flexDirection: 'row', // Horizontal layout
       justifyContent: 'space-between',
       alignItems: '',
-      height: '100vh',
+      minHeight: '100vh', // Minimum height to allow scrolling
       width: '100vw', // Full width of the viewport
       margin: 0,
       padding: '2rem',
       background: 'linear-gradient(90deg, #e6e6fa, #add8e6)', // Light lavender to light blue gradient
       color: '#333333', // Dark gray text for contrast
+      overflowY: 'auto', // Enable vertical scrolling
     },
     leftSection: {
       flex: 1,
@@ -50,10 +53,11 @@ function HomePage() {
       gap: '1rem',
       justifyContent: 'center',
       alignItems: 'center',
+      paddingBottom: '10rem',
     },
     card: {
       width: '200px',
-      height: '250px',
+      height: '350px',
       backgroundColor: '#ffffff', // White background for the card
       borderRadius: '8px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Subtle shadow
@@ -77,55 +81,60 @@ function HomePage() {
   React.useEffect(() => {
     document.body.style.margin = '0';
     document.body.style.padding = '0';
-    document.body.style.overflow = 'hidden'; // Prevent scrolling
+    document.body.style.overflow = 'auto'; // Allow scrolling
   }, []);
 
   return (
-    <div style={styles.container}>
-      {/* Left Section */}
-      <div style={styles.leftSection}>
-        <h1 style={styles.heading}>Welcome to the Health and Fitness Center</h1>
-        <p style={styles.subheading}>
-          Achieve your fitness goals with personalized programs and expert guidance.
-        </p>
-        <button
-          style={styles.button}
-          onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
-          onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
-        >
-          Get Started
-        </button>
-      </div>
+    <>
+      <Navbar /> 
+     
+      <div style={styles.container}>
+        {/* Left Section */}
+        <div style={styles.leftSection}>
+          <h1 style={styles.heading}>Welcome to the Health and Fitness Center</h1>
+          <p style={styles.subheading}>
+            Achieve your fitness goals with personalized programs and expert guidance.
+          </p>
+          <button
+            style={styles.button}
+            onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
+            onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
+          >
+            Get Started
+          </button>
+        </div>
 
-      {/* Right Section */}
-      <div style={styles.rightSection}>
-        <div style={styles.card}>
-          <img
-            src="https://via.placeholder.com/200x150" // Replace with actual image URL
-            alt="Trainer"
-            style={styles.cardImage}
-          />
-          <div style={styles.cardText}>Expert Trainers</div>
-        </div>
-        <div style={styles.card}>
-          <img
-            src="https://via.placeholder.com/200x150" // Replace with actual image URL
-            alt="Nutrition"
-            style={styles.cardImage}
-          />
-          <div style={styles.cardText}>Nutrition Plans</div>
-        </div>
-        <div style={styles.card}>
-          <img
-            src="https://via.placeholder.com/200x150" // Replace with actual image URL
-            alt="Programs"
-            style={styles.cardImage}
-          />
-          <div style={styles.cardText}>Fitness Programs</div>
+        {/* Right Section */}
+        <div style={styles.rightSection}>
+          <div style={styles.card}>
+            <img
+              src="https://via.placeholder.com/200x150" // Replace with actual image URL
+              alt="Trainer"
+              style={styles.cardImage}
+            />
+            <div style={styles.cardText}>Expert Trainers</div>
+          </div>
+          <div style={styles.card}>
+            <img
+              src="https://via.placeholder.com/200x150" // Replace with actual image URL
+              alt="Nutrition"
+              style={styles.cardImage}
+            />
+            <div style={styles.cardText}>Nutrition Plans</div>
+          </div>
+          <div style={styles.card}>
+            <img
+              src="https://via.placeholder.com/200x150" // Replace with actual image URL
+              alt="Programs"
+              style={styles.cardImage}
+            />
+            <div style={styles.cardText}>Fitness Programs</div>
+          </div>
         </div>
       </div>
-    </div>
+      <Footer /> {/* Footer component at the bottom */} 
+    </>
   );
-}
+};
 
 export default HomePage;

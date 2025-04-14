@@ -5,6 +5,7 @@ const API = axios.create({
 });
 
 export const createUser = (userData) => API.post('/users', userData);
+export const loginUser = (loginData) => API.post('/users/login', loginData); // Login API
 export const getUsers = () => API.get('/users');
 export const updateUser = (id, userData) => API.put(`/users/${id}`, userData);
 

@@ -73,6 +73,16 @@ function Navbar() {
           </li>
           <li>
             <Link
+              to="/users"
+              style={styles.link}
+              onMouseOver={(e) => (e.target.style.color = styles.linkHover.color)}
+              onMouseOut={(e) => (e.target.style.color = styles.link.color)}
+            >
+              Users
+            </Link>
+          </li>
+          <li>
+            <Link
               to="/register"
               style={styles.link}
               onMouseOver={(e) => (e.target.style.color = styles.linkHover.color)}
@@ -83,12 +93,12 @@ function Navbar() {
           </li>
           <li>
             <Link
-              to="/users"
+              to="/login"
               style={styles.link}
               onMouseOver={(e) => (e.target.style.color = styles.linkHover.color)}
               onMouseOut={(e) => (e.target.style.color = styles.link.color)}
             >
-              Users
+              Login
             </Link>
           </li>
         </ul>
