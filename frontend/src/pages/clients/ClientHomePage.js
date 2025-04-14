@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import ClientNavBar from './ClientNavBar'; // Import the ClientNavBar component
 import Footer from '../../components/Footer';
-import { jwtDecode } from 'jwt-decode'; // Import jwt-decode to decode the token
+import {jwtDecode} from 'jwt-decode'; // Import jwt-decode to decode the token
 
 function ClientHomePage() {
   const [clientName, setClientName] = useState(''); // State to store the client's name
+  const [trainers, setTrainers] = useState([]); // State to store trainers
+  const [nutritionists, setNutritionists] = useState([]); // State to store nutritionists
+  const [fitnessPrograms, setFitnessPrograms] = useState([]); // State to store fitness programs
 
   const styles = {
     container: {
@@ -16,7 +19,7 @@ function ClientHomePage() {
       margin: 0,
       padding: 0,
       overflowY: 'auto',
-      overflowX: 'hidden', // Prevent horizontal scrolling
+      overflowX: 'hidden',
     },
     content: {
       flex: 1,
@@ -25,38 +28,46 @@ function ClientHomePage() {
       alignItems: 'center',
       justifyContent: 'center',
       textAlign: 'center',
-      width: '100%', // Ensure content does not exceed container width
+      width: '100%',
     },
     heading: {
       fontSize: '2.8rem',
       fontWeight: 'bold',
-      color: 'rgb(10, 53, 99)', // Vibrant blue for the heading
+      color: 'rgb(10, 53, 99)',
       marginBottom: '1rem',
     },
     subheading: {
       fontSize: '1.4rem',
-      color: '#555555', // Medium gray for the subheading
+      color: '#555555',
       marginBottom: '2rem',
     },
-    button: {
-      padding: '0.8rem 2rem',
-      fontSize: '1.2rem',
-      fontWeight: 'bold',
-      color: '#ffffff', // White text for the button
-      backgroundColor: 'rgb(20, 97, 99)', // Vibrant blue button
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      transition: 'background-color 0.3s ease',
+    section: {
+      margin: '2rem 0',
+      padding: '1rem',
+      backgroundColor: '#ffffff',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      width: '90%',
+      maxWidth: '800px',
     },
-    buttonHover: {
-      backgroundColor: '#0056b3', // Darker blue on hover
+    sectionHeading: {
+      fontSize: '1.8rem',
+      fontWeight: 'bold',
+      marginBottom: '1rem',
+      color: '#333',
+    },
+    item: {
+      marginBottom: '1rem',
+      padding: '1rem',
+      border: '1px solid #ccc',
+      borderRadius: '4px',
+      textAlign: 'left',
     },
   };
 
-  // Fetch client name from the backend
+  // Fetch client name and available data
   useEffect(() => {
-    const fetchClientName = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -68,53 +79,99 @@ function ClientHomePage() {
         const decoded = jwtDecode(token);
 
         // Fetch user details using the ID from the decoded token
-        const response = await fetch(`http://localhost:5000/api/users/${decoded.id}`, {
+        const userResponse = await fetch(`http://localhost:5000/api/users/${decoded.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (!response.ok) {
+        if (!userResponse.ok) {
           throw new Error('Failed to fetch client name');
         }
 
-        const data = await response.json();
-        setClientName(data.name); // Set the client's name
+        const userData = await userResponse.json();
+        setClientName(userData.name);
+
+        // Fetch all users
+        const usersResponse = await fetch('http://localhost:5000/api/users', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!usersResponse.ok) {
+          throw new Error('Failed to fetch users');
+        }
+
+        const usersData = await usersResponse.json();
+
+        // Filter users by roles
+        const trainersData = usersData.filter((user) => user.role === 'trainer');
+        const nutritionistsData = usersData.filter((user) => user.role === 'nutritionist');
+
+        setTrainers(trainersData);
+        setNutritionists(nutritionistsData);
+
+        // Fetch fitness programs
+        const fitnessProgramsResponse = await fetch('http://localhost:5000/api/fitness-programs');
+        const fitnessProgramsData = await fitnessProgramsResponse.json();
+        setFitnessPrograms(fitnessProgramsData);
       } catch (error) {
-        console.error('Error fetching client name:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchClientName();
-  }, []);
-
-  // Ensure no white borders by applying global styles
-  React.useEffect(() => {
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-    document.body.style.overflowY = 'auto'; // Allow scrolling
-    document.body.style.overflowX = 'hidden'; // Prevent horizontal scrolling
+    fetchData();
   }, []);
 
   return (
     <>
       <div style={styles.container}>
-        <ClientNavBar /> {/* Add the ClientNavBar at the top */}
+        <ClientNavBar />
         <div style={styles.content}>
-          <h1 style={styles.heading}>Welcome, {clientName}!</h1> {/* Display the client's name */}
+          <h1 style={styles.heading}>Welcome, {clientName}!</h1>
           <p style={styles.subheading}>
             Manage your fitness activities, track progress, and achieve your goals.
           </p>
-          <button
-            style={styles.button}
-            onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
-            onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
-          >
-            Explore Activities
-          </button>
+
+          {/* Trainers Section */}
+          <div style={styles.section}>
+            <h2 style={styles.sectionHeading}>Available Trainers</h2>
+            {trainers.map((trainer) => (
+              <div key={trainer.id} style={styles.item}>
+                <h3>{trainer.name}</h3>
+                <p>Specialization: {trainer.specialization}</p>
+                <p>Experience: {trainer.experience} years</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Nutritionists Section */}
+          <div style={styles.section}>
+            <h2 style={styles.sectionHeading}>Available Nutritionists</h2>
+            {nutritionists.map((nutritionist) => (
+              <div key={nutritionist.id} style={styles.item}>
+                <h3>{nutritionist.name}</h3>
+                <p>Specialization: {nutritionist.specialization}</p>
+                <p>Experience: {nutritionist.experience} years</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Fitness Programs Section */}
+          <div style={styles.section}>
+            <h2 style={styles.sectionHeading}>Available Fitness Programs</h2>
+            {fitnessPrograms.map((program) => (
+              <div key={program.id} style={styles.item}>
+                <h3>{program.name}</h3>
+                <p>Description: {program.description}</p>
+                <p>Duration: {program.duration} weeks</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-      <Footer /> {/* Add the Footer at the bottom */}
+      <Footer />
     </>
   );
 }

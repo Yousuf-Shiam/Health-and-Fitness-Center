@@ -153,5 +153,27 @@ router.delete('/:id', async (req, res) => {
 });
 
 // @desc    Get all users
+// @route   GET /api/users
+// @access  Private
+router.get('/', async (req, res) => {
+  try {
+    const users = await User.find().select('-password'); // Exclude password
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+// @desc    Get user by role
+// @route   GET /api/users/role/:role
+// @access  Private
+// router.get('/role/:role', async (req, res) => {
+//   try {
+//     const users = await User.find({ role: req.params.role }).select('-password'); // Exclude password
+//     res.json(users);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server error', error: error.message });
+//   }
+// });
+
 
 module.exports = router;

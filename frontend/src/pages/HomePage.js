@@ -16,6 +16,7 @@ function HomePage() {
       background: 'linear-gradient(90deg, #e6e6fa, #add8e6)', // Light lavender to light blue gradient
       color: '#333333', // Dark gray text for contrast
       overflowY: 'auto', // Enable vertical scrolling
+      overflowX: 'hidden', // Prevent horizontal scrolling
     },
     leftSection: {
       flex: 1,
@@ -82,6 +83,7 @@ function HomePage() {
     document.body.style.margin = '0';
     document.body.style.padding = '0';
     document.body.style.overflow = 'auto'; // Allow scrolling
+    document.body.style.overflowX = 'hidden'; // Prevent horizontal scrolling
   }, []);
 
   return (
