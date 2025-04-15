@@ -10,5 +10,6 @@ export const getUsers = () => API.get('/users');
 export const updateUser = (id, userData) => API.put(`/users/${id}`, userData);
 // Program-related API calls
 export const createFitnessService = (programData) => API.post('/programs', programData); // Add this function
+export const getFitnessPrograms = () => API.get('/programs');
 
 export default API;

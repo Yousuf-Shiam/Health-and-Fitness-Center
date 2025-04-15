@@ -30,4 +30,17 @@ router.post('/', protect, async (req, res) => {
   }
 });
 
+// @desc    Get all fitness programs
+// @route   GET /api/programs
+// @access  Public
+router.get('/', async (req, res) => {
+  try {
+    const programs = await Program.find().populate('creator', 'name role'); // Populate creator details
+    res.status(200).json(programs);
+  } catch (error) {
+    console.error('Error fetching programs:', error);
+    res.status(500).json({ message: 'Failed to fetch programs', error });
+  }
+});
+
 module.exports = router;
