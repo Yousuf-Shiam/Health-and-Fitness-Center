@@ -12,4 +12,9 @@ export const updateUser = (id, userData) => API.put(`/users/${id}`, userData);
 export const createFitnessService = (programData) => API.post('/programs', programData); // Add this function
 export const getFitnessPrograms = () => API.get('/programs');
 
+export const createBooking = (bookingData, config) =>
+  API.post('/bookings', bookingData, config);
+
+export const getBookings = () => API.get('/bookings');
+
 export default API;

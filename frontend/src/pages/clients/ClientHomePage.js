@@ -3,6 +3,8 @@ import ClientNavBar from './ClientNavBar'; // Import the ClientNavBar component
 import Footer from '../../components/Footer';
 import {jwtDecode} from 'jwt-decode'; // Correct import for jwt-decode
 import { getFitnessPrograms } from '../../services/api'; // Import the API function
+import { createBooking } from '../../services/api'; // Import the booking API function
+
 
 function ClientHomePage() {
   const [clientName, setClientName] = useState(''); // State to store the client's name
@@ -137,6 +139,53 @@ function ClientHomePage() {
     program.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Handle booking a program
+  const handleBookProgram = async (programId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('You must be logged in to book a program.');
+        return;
+      }
+  
+      // Decode the token to get the user's details
+      const decoded = jwtDecode(token);
+      if (decoded.role !== 'client') {
+        alert('Only clients can book programs.');
+        return;
+      }
+  
+      // Prepare booking data
+      const bookingData = {
+        programId, // ID of the program being booked
+        clientId: decoded.id, // ID of the client making the booking
+        bookingDate: new Date().toISOString(), // Current date as the booking date
+      };
+  
+      // Send the booking request with the authorization token and booking data
+      await createBooking(bookingData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      alert('Program booked successfully!');
+    } catch (error) {
+      console.error('Failed to book program:', error.response?.data || error.message);
+  
+      // Handle specific error cases
+      if (error.response?.status === 401) {
+        alert('You are not authorized to book this program. Please log in.');
+      } else if (error.response?.status === 400) {
+        alert('Invalid program ID or booking request.');
+      } else if (error.response?.status === 403) {
+        alert('Only clients can book programs.');
+      } else {
+        alert('Failed to book program. Please try again.');
+      }
+    }
+  };
+
   return (
     <>
       <div style={styles.container}>
@@ -191,6 +240,7 @@ function ClientHomePage() {
                 <p>Description: {program.description}</p>
                 <p>Duration: {program.duration} weeks</p>
                 <p>Price: ${program.price}</p>
+                <button onClick={() => handleBookProgram(program._id)}>Book Now</button>
               </div>
             ))}
           </div>
