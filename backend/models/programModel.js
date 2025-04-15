@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const programSchema = new mongoose.Schema(
+const programSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -8,16 +8,6 @@ const programSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
-    },
-    creator: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // Reference to the user who created the program
-      required: true,
-    },
-    role: {
-      type: String,
-      enum: ['trainer', 'nutritionist'], // Role of the creator
       required: true,
     },
     price: {
@@ -28,16 +18,18 @@ const programSchema = new mongoose.Schema(
       type: Number, // Duration in weeks
       required: true,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
+    role: {
+      type: String,
+      enum: ['trainer', 'nutritionist'], // Role of the creator
+      required: true,
+    },
+    creator: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User', // Reference to the user who created the program
+      required: true,
     },
   },
-  {
-    timestamps: true, // Automatically manage createdAt and updatedAt fields
-  }
+  { timestamps: true }
 );
 
-const Program = mongoose.model('Program', programSchema);
-
-module.exports = Program;
+module.exports = mongoose.model('Program', programSchema);

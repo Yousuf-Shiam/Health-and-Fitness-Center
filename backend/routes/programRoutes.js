@@ -7,27 +7,26 @@ const { protect } = require('../middleware/authMiddleware');
 // @route   POST /api/programs
 // @access  Private (Trainer/Nutritionist)
 router.post('/', protect, async (req, res) => {
-  const { name, description, price, duration } = req.body;
+  const { name, description, price, duration, role } = req.body;
 
-  // Ensure only trainers or nutritionists can create programs
-  if (req.user.role !== 'trainer' && req.user.role !== 'nutritionist') {
-    return res.status(403).json({ message: 'Only trainers and nutritionists can create programs' });
+  if (!name || !description || !price || !duration || !role) {
+    return res.status(400).json({ message: 'All fields are required' });
   }
 
   try {
-    const program = new Program({
+    const program = await Program.create({
       name,
       description,
-      creator: req.user._id, // Set the creator as the logged-in user
-      role: req.user.role, // Set the role (trainer or nutritionist)
       price,
       duration,
+      role,
+      creator: req.user._id, // Ensure the user is authenticated
     });
 
-    const createdProgram = await program.save();
-    res.status(201).json(createdProgram); // Respond with the created program
+    res.status(201).json(program);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error creating program:', error);
+    res.status(500).json({ message: 'Failed to create program', error });
   }
 });
 

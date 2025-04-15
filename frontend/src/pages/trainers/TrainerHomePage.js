@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
+import { jwtDecode } from 'jwt-decode'; // Correct import for jwt-decode
 import TrainerNavBar from './TrainerNavBar'; // Import the TrainerNavBar component
 import Footer from '../../components/Footer';
 import { useNavigate } from 'react-router-dom';
@@ -45,6 +45,10 @@ function TrainerHomePage() {
   const handleLogout = () => {
     localStorage.removeItem('token'); // Remove token from localStorage
     navigate('/login'); // Redirect to login page
+  };
+
+  const handleCreateProgram = () => {
+    navigate('/trainer-create-program'); // Navigate to the program creation page
   };
 
   const toggleSidebar = () => {
@@ -114,15 +118,19 @@ function TrainerHomePage() {
     buttonHover: {
       backgroundColor: '#d4edda',
     },
-    closeButton: {
-      alignSelf: 'flex-end',
-      backgroundColor: '#ffffff',
-      color: '#0f5132',
+    createProgramButton: {
+      padding: '0.8rem 2rem',
+      fontSize: '1rem',
+      fontWeight: 'bold',
+      color: '#ffffff',
+      backgroundColor: '#007bff',
       border: 'none',
-      padding: '0.5rem 1rem',
       borderRadius: '4px',
       cursor: 'pointer',
-      fontWeight: 'bold',
+      transition: 'background-color 0.3s ease',
+    },
+    createProgramButtonHover: {
+      backgroundColor: '#0056b3',
     },
     content: {
       flex: 1,
@@ -185,6 +193,14 @@ function TrainerHomePage() {
       <div style={styles.content}>
         <h1 style={styles.heading}>Welcome to the Trainer Dashboard</h1>
         <p style={styles.subheading}>Manage your fitness programs and clients here.</p>
+        <button
+          style={styles.createProgramButton}
+          onMouseOver={(e) => (e.target.style.backgroundColor = styles.createProgramButtonHover.backgroundColor)}
+          onMouseOut={(e) => (e.target.style.backgroundColor = styles.createProgramButton.backgroundColor)}
+          onClick={handleCreateProgram}
+        >
+          Create Program
+        </button>
       </div>
 
       {/* Footer */}

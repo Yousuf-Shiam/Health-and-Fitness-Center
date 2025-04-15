@@ -73,6 +73,21 @@ body {
   form button:hover {
     background-color: #0056b3;
   }
+  .create-program-btn {
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .create-program-btn:hover {
+    background-color: #0056b3;
+  }
   
   /* User List Styles */
   ul {
