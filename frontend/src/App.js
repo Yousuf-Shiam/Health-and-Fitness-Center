@@ -10,6 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ClientProfile from './pages/clients/ClientProfile';
 import NutritionistProfile from './pages/nutritionists/NutritionistProfile';
 import DietProgramCreation from './pages/nutritionists/DietProgramCreation';
+import TrainerProfile from './pages/trainers/TrainerProfile';
 
 
 
@@ -53,8 +54,15 @@ function App() {
               <NutritionistHomePage />
             </ProtectedRoute>
           }
+          
         />
-              <Route
+        <Route
+         path="/trainer-profile"
+         element={
+         <TrainerProfile />
+         } 
+        />
+        <Route
           path="/nutritionist-profile"
           element={
             <ProtectedRoute>

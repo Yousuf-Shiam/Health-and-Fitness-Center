@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
-import TrainerNavBar from './TrainerNavBar'; // Import the TrainerNavBar component
-import Footer from '../../components/Footer';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
+import { Link } from 'react-router-dom';
 
-function TrainerHomePage() {
-  const [trainerName, setTrainerName] = useState(''); // State to store the trainer's name
-  const [sidebarVisible, setSidebarVisible] = useState(false); // State for sidebar visibility
+function TrainerNavBar() {
+  const [trainerName, setTrainerName] = useState(''); // State to hold trainer name
+  const [sidebarVisible, setSidebarVisible] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,8 +31,8 @@ function TrainerHomePage() {
           throw new Error('Failed to fetch trainer name');
         }
 
-        const userData = await response.json();
-        setTrainerName(userData.name); // Set the trainer's name
+        const data = await response.json();
+        setTrainerName(data.name); // Set the trainer's name
       } catch (error) {
         console.error('Error fetching trainer name:', error);
       }
@@ -54,24 +53,27 @@ function TrainerHomePage() {
   const firstLetter = trainerName.charAt(0).toUpperCase();
 
   const styles = {
-    container: {
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100vh',
-      background: 'linear-gradient(90deg, #e6e6fa, #add8e6)',
-      color: '#333333',
-    },
     navbar: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: '1rem',
-      background: 'linear-gradient(90deg, #0f5132, #0d3a7d)',
+      background: 'linear-gradient(90deg, #0f5132, #0d3a7d)', // Match Navbar.js color scheme
       color: '#ffffff',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)', // Slight shadow for depth
       position: 'sticky',
       top: 0,
       margin: '0',
+    },
+    logo: {
+      fontSize: '1.8rem',
+      fontWeight: 'bold',
+      color: '#ffffff', // White text for the logo
+      textDecoration: 'none',
+      transition: 'color 0.3s ease',
+    },
+    logoHover: {
+      color: '#ffcc00', // Bright yellow on hover
     },
     avatar: {
       width: '40px',
@@ -88,17 +90,17 @@ function TrainerHomePage() {
     sidebar: {
       position: 'fixed',
       top: 0,
-      right: sidebarVisible ? 0 : '-100%',
+      right: sidebarVisible ? 0 : '-100%', // Slide in/out from the right
       width: '250px',
       height: '100%',
-      background: 'linear-gradient(90deg, #0f5132, #0d3a7d)',
+      background: 'linear-gradient(90deg, #0f5132, #0d3a7d)', // Match Navbar.js color scheme
       color: '#ffffff',
       padding: '1rem',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'flex-start',
-      transition: 'right 0.3s ease',
-      boxShadow: '-4px 0 6px rgba(0, 0, 0, 0.2)',
+      transition: 'right 0.3s ease', // Smooth slide-in effect
+      boxShadow: '-4px 0 6px rgba(0, 0, 0, 0.2)', // Shadow on the left side of the sidebar
     },
     button: {
       backgroundColor: '#ffffff',
@@ -124,27 +126,22 @@ function TrainerHomePage() {
       cursor: 'pointer',
       fontWeight: 'bold',
     },
-    content: {
-      flex: 1,
-      padding: '2rem',
-      textAlign: 'center',
-    },
-    heading: {
-      fontSize: '2rem',
-      marginBottom: '1rem',
-    },
-    subheading: {
-      fontSize: '1.2rem',
-      marginBottom: '2rem',
-      color: '#555',
-    },
   };
 
   return (
-    <div style={styles.container}>
+    <>
       {/* Navbar */}
       <div style={styles.navbar}>
-        <div>Health & Fitness</div>
+        <div>
+          <Link
+            to="/trainer-home"
+            style={styles.logo}
+            onMouseOver={(e) => (e.target.style.color = styles.logoHover.color)}
+            onMouseOut={(e) => (e.target.style.color = styles.logo.color)}
+          >
+            Health & Fitness
+          </Link>
+        </div>
         <div
           style={styles.avatar}
           onClick={toggleSidebar}
@@ -162,7 +159,7 @@ function TrainerHomePage() {
         >
           Close
         </button>
-        <h2>Welcome, {trainerName}!</h2>
+        <h2>Welcome, {trainerName}!</h2> {/* Display the trainer name */}
         <button
           style={styles.button}
           onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
@@ -179,18 +176,10 @@ function TrainerHomePage() {
         >
           Logout
         </button>
+        {/* Add more options here */}
       </div>
-
-      {/* Main Content */}
-      <div style={styles.content}>
-        <h1 style={styles.heading}>Welcome to the Trainer Dashboard</h1>
-        <p style={styles.subheading}>Manage your fitness programs and clients here.</p>
-      </div>
-
-      {/* Footer */}
-      <Footer />
-    </div>
+    </>
   );
 }
 
-export default TrainerHomePage;
+export default TrainerNavBar;
