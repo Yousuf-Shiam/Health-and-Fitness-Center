@@ -15,6 +15,10 @@ export const getFitnessPrograms = () => API.get('/programs');
 export const createBooking = (bookingData, config) =>
   API.post('/bookings', bookingData, config);
 
-export const getBookings = () => API.get('/bookings');
+export const getBookings = () => API.get('/bookings'); // Fetch all bookings for the client
+export const getBookingById = (bookingId) => API.get(`/bookings/${bookingId}`); // Fetch booking by ID
+
+export const updateBookingStatus = (bookingId, statusData) =>
+  API.put(`/bookings/${bookingId}/status`, statusData); // Update booking status
 
 export default API;

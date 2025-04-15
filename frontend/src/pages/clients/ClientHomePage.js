@@ -155,6 +155,26 @@ function ClientHomePage() {
         return;
       }
   
+    // Check if the program is already booked
+    const existingBookingResponse = await fetch(`http://localhost:5000/api/bookings`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (existingBookingResponse.ok) {
+      const existingBookings = await existingBookingResponse.json();
+      const isAlreadyBooked = existingBookings.some(
+        (booking) => booking.program._id === programId
+      );
+
+      if (isAlreadyBooked) {
+        alert('You have already booked this program.');
+        return;
+      }
+    }
+
+
       // Prepare booking data
       const bookingData = {
         programId, // ID of the program being booked

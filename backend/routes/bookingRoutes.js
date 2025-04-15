@@ -29,7 +29,7 @@ router.post('/', protect, async (req, res) => {
   });
 
 
-// Get bookings for a client
+//Get bookings for a client
 router.get('/', protect, async (req, res) => {
   try {
     const bookings = await Booking.find({ client: req.user.id }).populate('program');
@@ -38,5 +38,6 @@ router.get('/', protect, async (req, res) => {
     res.status(400).json({ message: 'Failed to fetch bookings', error });
   }
 });
+
 
 module.exports = router;
