@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import ClientNavBar from './ClientNavBar'; // Import the ClientNavBar component
 import Footer from '../../components/Footer';
-import {jwtDecode} from 'jwt-decode'; // Import jwt-decode to decode the token
+import {jwtDecode} from 'jwt-decode'; // Correct import for jwt-decode
+import { getFitnessPrograms } from '../../services/api'; // Import the API function
 
 function ClientHomePage() {
   const [clientName, setClientName] = useState(''); // State to store the client's name
   const [trainers, setTrainers] = useState([]); // State to store trainers
   const [nutritionists, setNutritionists] = useState([]); // State to store nutritionists
   const [fitnessPrograms, setFitnessPrograms] = useState([]); // State to store fitness programs
+  const [searchQuery, setSearchQuery] = useState(''); // State for search query
 
   const styles = {
     container: {
@@ -63,9 +65,16 @@ function ClientHomePage() {
       borderRadius: '4px',
       textAlign: 'left',
     },
+    searchBar: {
+      marginBottom: '1rem',
+      padding: '0.8rem',
+      width: '100%',
+      border: '1px solid #ccc',
+      borderRadius: '4px',
+    },
   };
 
-  // Fetch client name and available data
+  // Fetch client name, trainers, nutritionists, and fitness programs
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -113,9 +122,8 @@ function ClientHomePage() {
         setNutritionists(nutritionistsData);
 
         // Fetch fitness programs
-        const fitnessProgramsResponse = await fetch('http://localhost:5000/api/fitness-programs');
-        const fitnessProgramsData = await fitnessProgramsResponse.json();
-        setFitnessPrograms(fitnessProgramsData);
+        const programsResponse = await getFitnessPrograms();
+        setFitnessPrograms(programsResponse.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -123,6 +131,11 @@ function ClientHomePage() {
 
     fetchData();
   }, []);
+
+  // Filter programs based on search query
+  const filteredPrograms = fitnessPrograms.filter((program) =>
+    program.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <>
@@ -161,11 +174,23 @@ function ClientHomePage() {
           {/* Fitness Programs Section */}
           <div style={styles.section}>
             <h2 style={styles.sectionHeading}>Available Fitness Programs</h2>
-            {fitnessPrograms.map((program) => (
-              <div key={program.id} style={styles.item}>
+
+            {/* Search Bar */}
+            <input
+              type="text"
+              placeholder="Search programs..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={styles.searchBar}
+            />
+
+            {/* Display Filtered Programs */}
+            {filteredPrograms.map((program) => (
+              <div key={program._id} style={styles.item}>
                 <h3>{program.name}</h3>
                 <p>Description: {program.description}</p>
                 <p>Duration: {program.duration} weeks</p>
+                <p>Price: ${program.price}</p>
               </div>
             ))}
           </div>
