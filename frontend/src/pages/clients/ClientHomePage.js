@@ -12,6 +12,7 @@ function ClientHomePage() {
   const [nutritionists, setNutritionists] = useState([]); // State to store nutritionists
   const [fitnessPrograms, setFitnessPrograms] = useState([]); // State to store fitness programs
   const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [startDate, setStartDate] = useState(''); // State for start date
 
   const styles = {
     container: {
@@ -139,6 +140,14 @@ function ClientHomePage() {
     program.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+    // Handle start date change
+    const handleStartDateChange = (programId, date) => {
+      setStartDate((prevDates) => ({
+        ...prevDates,
+        [programId]: date, // Update the start date for the specific program
+      }));
+    };
+
   // Handle booking a program
   const handleBookProgram = async (programId) => {
     try {
@@ -180,6 +189,7 @@ function ClientHomePage() {
         programId, // ID of the program being booked
         clientId: decoded.id, // ID of the client making the booking
         bookingDate: new Date().toISOString(), // Current date as the booking date
+        startDate: startDate[programId], // Start date for the program
       };
   
       // Send the booking request with the authorization token and booking data
@@ -254,15 +264,32 @@ function ClientHomePage() {
             />
 
             {/* Display Filtered Programs */}
-            {filteredPrograms.map((program) => (
-              <div key={program._id} style={styles.item}>
-                <h3>{program.name}</h3>
-                <p>Description: {program.description}</p>
-                <p>Duration: {program.duration} weeks</p>
-                <p>Price: ${program.price}</p>
-                <button onClick={() => handleBookProgram(program._id)}>Book Now</button>
-              </div>
-            ))}
+            {fitnessPrograms
+              .filter((program) =>
+                program.name.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((program) => (
+                <div key={program._id} style={styles.item}>
+                  <h3>{program.name}</h3>
+                  <p>Description: {program.description}</p>
+                  <p>Duration: {program.duration} weeks</p>
+                  <p>Price: ${program.price}</p>
+                  <input
+                    type="date"
+                    value={startDate[program._id] || ''} // Use the start date for this program
+                    onChange={(e) =>
+                      handleStartDateChange(program._id, e.target.value)
+                    }
+                    style={styles.datePicker}
+                  />
+                  <button
+                    onClick={() => handleBookProgram(program._id)}
+                    disabled={!startDate[program._id]} // Disable button if no date is selected
+                  >
+                    Book Now
+                  </button>
+                </div>
+              ))}
           </div>
         </div>
       </div>

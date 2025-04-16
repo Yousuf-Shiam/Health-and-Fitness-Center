@@ -8,7 +8,7 @@ const router = express.Router();
 // @route   POST /api/bookings
 // @access  Private (Client)
 router.post('/', protect, async (req, res) => {
-    const { programId, clientId, bookingDate } = req.body;
+    const { programId, clientId, bookingDate, startDate } = req.body;
   
     try {
       // Ensure the user has the 'client' role
@@ -20,6 +20,7 @@ router.post('/', protect, async (req, res) => {
         client: clientId,
         program: programId,
         bookingDate,
+        startDate,
       });
   
       res.status(201).json(booking);
