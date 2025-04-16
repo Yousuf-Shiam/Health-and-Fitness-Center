@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import NutritionistNavBar from './NutritionistNavBar'; // Import the NutritionistNavBar component
 import Footer from '../../components/Footer';
 
-function DietProgramCreation() {
+function NutritionistProgramCreation() {
   const [programData, setProgramData] = useState({
     name: '',
     description: '',
@@ -11,6 +12,7 @@ function DietProgramCreation() {
   });
 
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setProgramData({ ...programData, [e.target.name]: e.target.value });
@@ -18,32 +20,32 @@ function DietProgramCreation() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         setMessage('You must be logged in to create a program.');
         return;
       }
-  
+
       console.log('Program Data:', programData); // Debugging: Log program data
       console.log('Token:', token); // Debugging: Log token
-  
+
       const response = await fetch('http://localhost:5000/api/programs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(programData),
+        body: JSON.stringify({ ...programData, role: 'nutritionist' }), // Add role as 'nutritionist'
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Error Response:', errorData); // Debugging: Log error response
         throw new Error(errorData.message || 'Failed to create program');
       }
-  
+
       const data = await response.json();
       setMessage(`Program "${data.name}" created successfully!`);
       setProgramData({ name: '', description: '', price: '', duration: '' }); // Reset form
@@ -167,4 +169,4 @@ function DietProgramCreation() {
   );
 }
 
-export default DietProgramCreation;
+export default NutritionistProgramCreation;

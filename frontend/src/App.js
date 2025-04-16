@@ -9,7 +9,7 @@ import NutritionistHomePage from './pages/nutritionists/NutritionistHomePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ClientProfile from './pages/clients/ClientProfile';
 import NutritionistProfile from './pages/nutritionists/NutritionistProfile';
-import DietProgramCreation from './pages/nutritionists/DietProgramCreation';
+import NutritionistProgramCreation from './pages/nutritionists/NutritionistProgramCreation'; // Import the new component
 import TrainerProfile from './pages/trainers/TrainerProfile';
 import TrainerProgramCreation from './pages/trainers/TrainerProgramCreation';
 
@@ -83,14 +83,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/nutritionist-create-program"
-          element={
-            <ProtectedRoute>
-              <DietProgramCreation />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/nutritionist-create-program"
+  element={
+    <ProtectedRoute>
+      <NutritionistProgramCreation />
+    </ProtectedRoute>
+  }
+/>
       </Routes>
       </Router>
       
