@@ -41,4 +41,44 @@ router.get('/', protect, async (req, res) => {
 });
 
 
+// @desc    Update booking status
+// @route   PUT /api/bookings/:id/status
+// @access  Private
+router.put('/:id/status', protect, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    booking.status = status; // Update the status
+    await booking.save();
+
+    res.status(200).json({ message: 'Booking status updated successfully', booking });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update booking status', error });
+  }
+});
+
+// @desc    Delete a booking
+// @route   DELETE /api/bookings/:id
+// @access  Private
+router.delete('/:id', protect, async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    await Booking.deleteOne({ _id: req.params.id });
+    res.status(200).json({ message: 'Booking deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete booking', error });
+  }
+});
+
+
 module.exports = router;

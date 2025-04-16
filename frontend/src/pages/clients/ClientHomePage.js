@@ -5,7 +5,6 @@ import {jwtDecode} from 'jwt-decode'; // Correct import for jwt-decode
 import { getFitnessPrograms } from '../../services/api'; // Import the API function
 import { createBooking } from '../../services/api'; // Import the booking API function
 
-
 function ClientHomePage() {
   const [clientName, setClientName] = useState(''); // State to store the client's name
   const [trainers, setTrainers] = useState([]); // State to store trainers
@@ -71,7 +70,7 @@ function ClientHomePage() {
     searchBar: {
       marginBottom: '1rem',
       padding: '0.8rem',
-      width: '100%',
+      width: '70%',
       border: '1px solid #ccc',
       borderRadius: '4px',
     },
@@ -274,6 +273,7 @@ function ClientHomePage() {
                   <p>Description: {program.description}</p>
                   <p>Duration: {program.duration} weeks</p>
                   <p>Price: ${program.price}</p>
+                  <p> Select Starting Date: {}
                   <input
                     type="date"
                     value={startDate[program._id] || ''} // Use the start date for this program
@@ -288,6 +288,7 @@ function ClientHomePage() {
                   >
                     Book Now
                   </button>
+                  </p>
                 </div>
               ))}
           </div>

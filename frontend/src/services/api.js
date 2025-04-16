@@ -21,4 +21,7 @@ export const getBookingById = (bookingId) => API.get(`/bookings/${bookingId}`); 
 export const updateBookingStatus = (bookingId, statusData) =>
   API.put(`/bookings/${bookingId}/status`, statusData); // Update booking status
 
+export const deleteBooking = (bookingId) =>
+  API.delete(`/bookings/${bookingId}`); // Delete booking
+
 export default API;
