@@ -78,6 +78,16 @@ function RegisterPage() {
     },
   };
 
+
+  // Ensure no white borders by applying global styles
+  React.useEffect(() => {
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    document.body.style.overflow = 'auto'; // Allow scrolling
+    document.body.style.overflowX = 'hidden'; // Prevent horizontal scrolling
+  }, []);
+
+
   return (
     <>
     <Navbar />

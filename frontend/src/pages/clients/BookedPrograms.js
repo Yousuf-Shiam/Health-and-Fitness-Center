@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {jwtDecode} from 'jwt-decode'; // Import jwt-decode to decode the token
 import { deleteBooking } from '../../services/api';
+import ClientNavBar from './ClientNavBar';
 
 const BookedPrograms = () => {
   const [bookings, setBookings] = useState([]);
@@ -145,7 +146,7 @@ const BookedPrograms = () => {
       setBookings((prevBookings) =>
         prevBookings.filter((booking) => booking._id !== bookingId)
       );
-      
+
       alert('Booking deleted successfully!');
     } catch (error) {
       console.error('Failed to delete booking:', error.message);
@@ -199,7 +200,11 @@ const BookedPrograms = () => {
     return <p>Loading bookings...</p>;
   }
 
+
+
   return (
+    <>
+      <ClientNavBar user={user} /> {/* Pass the user information to the navbar */}
     <div style={styles.container}>
       <h1 style={styles.heading}>All Bookings</h1>
 
@@ -266,6 +271,7 @@ const BookedPrograms = () => {
         ))
       )}
     </div>
+    </>
   );
 };
 
