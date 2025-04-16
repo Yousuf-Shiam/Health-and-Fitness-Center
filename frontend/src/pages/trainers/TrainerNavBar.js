@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode'; // Correct import for jwt-decode
 
 function TrainerNavBar() {
   const [trainerName, setTrainerName] = useState(''); // State to hold trainer name
@@ -65,16 +64,6 @@ function TrainerNavBar() {
       top: 0,
       margin: '0',
     },
-    logo: {
-      fontSize: '1.8rem',
-      fontWeight: 'bold',
-      color: '#ffffff', // White text for the logo
-      textDecoration: 'none',
-      transition: 'color 0.3s ease',
-    },
-    logoHover: {
-      color: '#ffcc00', // Bright yellow on hover
-    },
     avatar: {
       width: '40px',
       height: '40px',
@@ -126,22 +115,21 @@ function TrainerNavBar() {
       cursor: 'pointer',
       fontWeight: 'bold',
     },
+    title: {
+      textDecoration: 'none',
+      color: '#ffffff',
+      fontWeight: 'bold',
+      fontSize: '1.5rem',
+    },
   };
 
   return (
     <>
       {/* Navbar */}
       <div style={styles.navbar}>
-        <div>
-          <Link
-            to="/trainer-home"
-            style={styles.logo}
-            onMouseOver={(e) => (e.target.style.color = styles.logoHover.color)}
-            onMouseOut={(e) => (e.target.style.color = styles.logo.color)}
-          >
-            Health & Fitness
-          </Link>
-        </div>
+        <Link to="/trainer-home" style={styles.title}>
+          Health & Fitness
+        </Link>
         <div
           style={styles.avatar}
           onClick={toggleSidebar}
@@ -172,11 +160,18 @@ function TrainerNavBar() {
           style={styles.button}
           onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
           onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
+          onClick={() => navigate('/trainer-create-program')}
+        >
+          Create Program
+        </button>
+        <button
+          style={styles.button}
+          onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
+          onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
           onClick={handleLogout}
         >
           Logout
         </button>
-        {/* Add more options here */}
       </div>
     </>
   );

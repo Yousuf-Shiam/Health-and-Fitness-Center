@@ -1,87 +1,78 @@
 import React, { useState, useEffect } from 'react';
-import {jwtDecode} from 'jwt-decode'; // Import jwt-decode
+import {jwtDecode} from 'jwt-decode'; // Correct import for jwt-decode
 import NutritionistNavBar from './NutritionistNavBar'; // Import the NutritionistNavBar component
 import Footer from '../../components/Footer';
 
 function NutritionistHomePage() {
   const [nutritionistName, setNutritionistName] = useState(''); // State to store the nutritionist's name
-  const [programData, setProgramData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    duration: '',
-  });
-
+  const [nutritionistPrograms, setNutritionistPrograms] = useState([]); // State to store programs created by the nutritionist
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const fetchNutritionistName = async () => {
+    const fetchNutritionistData = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
           console.error('No token found');
           return;
         }
-
+    
         // Decode the token to get the user ID
         const decoded = jwtDecode(token);
-
-        // Fetch user details using the ID from the decoded token
-        const response = await fetch(`http://localhost:5000/api/users/${decoded.id}`, {
+        console.log('Decoded Token:', decoded); // Debugging: Log decoded token
+    
+        // Fetch all programs
+        const programsResponse = await fetch('http://localhost:5000/api/programs', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch nutritionist name');
+    
+        if (!programsResponse.ok) {
+          throw new Error('Failed to fetch programs');
         }
-
-        const userData = await response.json();
-        setNutritionistName(userData.name); // Set the nutritionist's name
+    
+        const programsData = await programsResponse.json();
+        console.log('Fetched Programs:', programsData); // Debugging: Log fetched programs
+    
+        // Filter programs created by the logged-in nutritionist
+        const filteredPrograms = programsData.filter(
+          (program) => program.creator._id === decoded.id && program.role === 'nutritionist'
+        );
+        console.log('Filtered Programs:', filteredPrograms); // Debugging: Log filtered programs
+    
+        // Fetch bookings for the filtered programs
+        const bookingsResponse = await fetch('http://localhost:5000/api/bookings', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+    
+        if (!bookingsResponse.ok) {
+          throw new Error('Failed to fetch bookings');
+        }
+    
+        const bookingsData = await bookingsResponse.json();
+        console.log('Fetched Bookings:', bookingsData); // Debugging: Log fetched bookings
+    
+        // Map bookings to their respective programs
+        const programsWithBookings = filteredPrograms.map((program) => {
+          const programBookings = bookingsData.filter(
+            (booking) => booking.program._id === program._id
+          );
+          return { ...program, bookings: programBookings };
+        });
+    
+        console.log('Programs with Bookings:', programsWithBookings); // Debugging: Log programs with bookings
+        setNutritionistPrograms(programsWithBookings);
       } catch (error) {
-        console.error('Error fetching nutritionist name:', error);
+        console.error('Error fetching data:', error);
+        setMessage('Failed to load data. Please try again.');
       }
     };
 
-    fetchNutritionistName();
+    fetchNutritionistData();
   }, []);
-
-  const handleChange = (e) => {
-    setProgramData({ ...programData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setMessage('You must be logged in to create a program.');
-        return;
-      }
-
-      const response = await fetch('http://localhost:5000/api/programs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(programData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create program');
-      }
-
-      const data = await response.json();
-      setMessage(`Program "${data.name}" created successfully!`);
-      setProgramData({ name: '', description: '', price: '', duration: '' }); // Reset form
-    } catch (error) {
-      console.error('Error creating program:', error);
-      setMessage('Failed to create program. Please try again.');
-    }
-  };
 
   const styles = {
     container: {
@@ -92,39 +83,29 @@ function NutritionistHomePage() {
       color: '#333333',
       padding: '2rem',
     },
-    form: {
-      maxWidth: '500px',
-      margin: '2rem auto',
-      padding: '2rem',
+    section: {
+      margin: '2rem 0',
+      padding: '1rem',
       backgroundColor: '#ffffff',
       borderRadius: '8px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      width: '90%',
+      maxWidth: '800px',
+      marginLeft: 'auto',
+      marginRight: 'auto',
     },
-    input: {
-      width: '100%',
+    sectionHeading: {
+      fontSize: '1.8rem',
+      fontWeight: 'bold',
       marginBottom: '1rem',
-      padding: '0.8rem',
+      color: '#333',
+    },
+    item: {
+      marginBottom: '1rem',
+      padding: '1rem',
       border: '1px solid #ccc',
       borderRadius: '4px',
-    },
-    button: {
-      padding: '0.8rem 2rem',
-      fontSize: '1rem',
-      fontWeight: 'bold',
-      color: '#ffffff',
-      backgroundColor: '#007bff',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      transition: 'background-color 0.3s ease',
-    },
-    buttonHover: {
-      backgroundColor: '#0056b3',
-    },
-    message: {
-      marginTop: '1rem',
-      fontSize: '1rem',
-      color: '#333',
+      textAlign: 'left',
     },
     heading: {
       textAlign: 'center',
@@ -137,6 +118,11 @@ function NutritionistHomePage() {
       marginBottom: '2rem',
       color: '#555',
     },
+    message: {
+      textAlign: 'center',
+      color: 'red',
+      marginTop: '1rem',
+    },
   };
 
   return (
@@ -144,52 +130,35 @@ function NutritionistHomePage() {
       <NutritionistNavBar /> {/* Add the NutritionistNavBar */}
       <div style={styles.container}>
         <h1 style={styles.heading}>Welcome, {nutritionistName}!</h1>
-        <p style={styles.subheading}>Create a new diet program for your clients.</p>
-        <form style={styles.form} onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="name"
-            value={programData.name}
-            onChange={handleChange}
-            style={styles.input}
-            placeholder="Program Name"
-            required
-          />
-          <textarea
-            name="description"
-            value={programData.description}
-            onChange={handleChange}
-            style={styles.input}
-            placeholder="Program Description"
-            required
-          />
-          <input
-            type="number"
-            name="price"
-            value={programData.price}
-            onChange={handleChange}
-            style={styles.input}
-            placeholder="Price"
-            required
-          />
-          <input
-            type="number"
-            name="duration"
-            value={programData.duration}
-            onChange={handleChange}
-            style={styles.input}
-            placeholder="Duration (in weeks)"
-            required
-          />
-          <button
-            type="submit"
-            style={styles.button}
-            onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
-            onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
-          >
-            Create Program
-          </button>
-        </form>
+        <p style={styles.subheading}>Here are the programs you created and their bookings.</p>
+
+        {/* Nutritionist Programs Section */}
+        <div style={styles.section}>
+          <h2 style={styles.sectionHeading}>Your Created Programs</h2>
+          {nutritionistPrograms.length > 0 ? (
+            nutritionistPrograms.map((program) => (
+              <div key={program._id} style={styles.item}>
+                <h3>{program.name}</h3>
+                <p>Description: {program.description}</p>
+                <p>Duration: {program.duration} weeks</p>
+                <p>Price: ${program.price}</p>
+                <h4>Bookings:</h4>
+                {program.bookings.length > 0 ? (
+                  <ul>
+                    {program.bookings.map((booking) => (
+                      <li key={booking._id}>{booking.client.name}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No bookings yet.</p>
+                )}
+              </div>
+            ))
+          ) : (
+            <p>No programs created yet.</p>
+          )}
+        </div>
+
         {message && <p style={styles.message}>{message}</p>}
       </div>
       <Footer />

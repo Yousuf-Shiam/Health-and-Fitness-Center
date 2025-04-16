@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode'; // Correct import for jwt-decode
+import {jwtDecode} from 'jwt-decode'; // Correct import for jwt-decode
 import TrainerNavBar from './TrainerNavBar'; // Import the TrainerNavBar component
 import Footer from '../../components/Footer';
-import { useNavigate } from 'react-router-dom';
 
 function TrainerHomePage() {
   const [trainerName, setTrainerName] = useState(''); // State to store the trainer's name
-  const [sidebarVisible, setSidebarVisible] = useState(false); // State for sidebar visibility
-  const navigate = useNavigate();
+  const [trainerPrograms, setTrainerPrograms] = useState([]); // State to store programs created by the trainer
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const fetchTrainerName = async () => {
+    const fetchTrainerData = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -20,42 +19,60 @@ function TrainerHomePage() {
 
         // Decode the token to get the user ID
         const decoded = jwtDecode(token);
+        console.log('Decoded Token:', decoded); // Debugging: Log decoded token
 
-        // Fetch user details using the ID from the decoded token
-        const response = await fetch(`http://localhost:5000/api/users/${decoded.id}`, {
+        // Fetch all programs
+        const programsResponse = await fetch('http://localhost:5000/api/programs', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch trainer name');
+        if (!programsResponse.ok) {
+          throw new Error('Failed to fetch programs');
         }
 
-        const userData = await response.json();
-        setTrainerName(userData.name); // Set the trainer's name
+        const programsData = await programsResponse.json();
+        console.log('Fetched Programs:', programsData); // Debugging: Log fetched programs
+
+        // Filter programs created by the logged-in trainer
+        const filteredPrograms = programsData.filter(
+          (program) => program.creator._id === decoded.id && program.role === 'trainer'
+        );
+        console.log('Filtered Programs:', filteredPrograms); // Debugging: Log filtered programs
+
+        // Fetch bookings for the filtered programs
+        const bookingsResponse = await fetch('http://localhost:5000/api/bookings', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!bookingsResponse.ok) {
+          throw new Error('Failed to fetch bookings');
+        }
+
+        const bookingsData = await bookingsResponse.json();
+        console.log('Fetched Bookings:', bookingsData); // Debugging: Log fetched bookings
+
+        // Map bookings to their respective programs
+        const programsWithBookings = filteredPrograms.map((program) => {
+          const programBookings = bookingsData.filter(
+            (booking) => booking.program._id === program._id
+          );
+          return { ...program, bookings: programBookings };
+        });
+
+        console.log('Programs with Bookings:', programsWithBookings); // Debugging: Log programs with bookings
+        setTrainerPrograms(programsWithBookings);
       } catch (error) {
-        console.error('Error fetching trainer name:', error);
+        console.error('Error fetching data:', error);
+        setMessage('Failed to load data. Please try again.');
       }
     };
 
-    fetchTrainerName();
+    fetchTrainerData();
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token'); // Remove token from localStorage
-    navigate('/login'); // Redirect to login page
-  };
-
-  const handleCreateProgram = () => {
-    navigate('/trainer-create-program'); // Navigate to the program creation page
-  };
-
-  const toggleSidebar = () => {
-    setSidebarVisible(!sidebarVisible);
-  };
-
-  const firstLetter = trainerName.charAt(0).toUpperCase();
 
   const styles = {
     container: {
@@ -64,148 +81,88 @@ function TrainerHomePage() {
       minHeight: '100vh',
       background: 'linear-gradient(90deg, #e6e6fa, #add8e6)',
       color: '#333333',
+      padding: '2rem',
     },
-    navbar: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+    section: {
+      margin: '2rem 0',
       padding: '1rem',
-      background: 'linear-gradient(90deg, #0f5132, #0d3a7d)',
-      color: '#ffffff',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
-      position: 'sticky',
-      top: 0,
-      margin: '0',
-    },
-    avatar: {
-      width: '40px',
-      height: '40px',
-      borderRadius: '50%',
       backgroundColor: '#ffffff',
-      color: '#0f5132',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      width: '90%',
+      maxWidth: '800px',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+    },
+    sectionHeading: {
+      fontSize: '1.8rem',
       fontWeight: 'bold',
-      cursor: 'pointer',
+      marginBottom: '1rem',
+      color: '#333',
     },
-    sidebar: {
-      position: 'fixed',
-      top: 0,
-      right: sidebarVisible ? 0 : '-100%',
-      width: '250px',
-      height: '100%',
-      background: 'linear-gradient(90deg, #0f5132, #0d3a7d)',
-      color: '#ffffff',
+    item: {
+      marginBottom: '1rem',
       padding: '1rem',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      transition: 'right 0.3s ease',
-      boxShadow: '-4px 0 6px rgba(0, 0, 0, 0.2)',
-    },
-    button: {
-      backgroundColor: '#ffffff',
-      color: '#0f5132',
-      border: 'none',
-      padding: '0.8rem 1rem',
-      margin: '0.5rem 0',
+      border: '1px solid #ccc',
       borderRadius: '4px',
-      cursor: 'pointer',
-      width: '100%',
       textAlign: 'left',
     },
-    buttonHover: {
-      backgroundColor: '#d4edda',
-    },
-    createProgramButton: {
-      padding: '0.8rem 2rem',
-      fontSize: '1rem',
-      fontWeight: 'bold',
-      color: '#ffffff',
-      backgroundColor: '#007bff',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      transition: 'background-color 0.3s ease',
-    },
-    createProgramButtonHover: {
-      backgroundColor: '#0056b3',
-    },
-    content: {
-      flex: 1,
-      padding: '2rem',
-      textAlign: 'center',
-    },
     heading: {
+      textAlign: 'center',
       fontSize: '2rem',
       marginBottom: '1rem',
     },
     subheading: {
+      textAlign: 'center',
       fontSize: '1.2rem',
       marginBottom: '2rem',
       color: '#555',
     },
+    message: {
+      textAlign: 'center',
+      color: 'red',
+      marginTop: '1rem',
+    },
   };
 
   return (
-    <div style={styles.container}>
-      {/* Navbar */}
-      <div style={styles.navbar}>
-        <div>Health & Fitness</div>
-        <div
-          style={styles.avatar}
-          onClick={toggleSidebar}
-          title="Open Sidebar"
-        >
-          {firstLetter}
+    <>
+      <TrainerNavBar /> {/* Add the TrainerNavBar */}
+      <div style={styles.container}>
+        <h1 style={styles.heading}>Welcome, {trainerName}!</h1>
+        <p style={styles.subheading}>Here are the programs you created and their bookings.</p>
+
+        {/* Trainer Programs Section */}
+        <div style={styles.section}>
+          <h2 style={styles.sectionHeading}>Your Created Programs</h2>
+          {trainerPrograms.length > 0 ? (
+            trainerPrograms.map((program) => (
+              <div key={program._id} style={styles.item}>
+                <h3>{program.name}</h3>
+                <p>Description: {program.description}</p>
+                <p>Duration: {program.duration} weeks</p>
+                <p>Price: ${program.price}</p>
+                <h4>Bookings:</h4>
+                {program.bookings.length > 0 ? (
+                  <ul>
+                    {program.bookings.map((booking) => (
+                      <li key={booking._id}>{booking.client.name}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No bookings yet.</p>
+                )}
+              </div>
+            ))
+          ) : (
+            <p>No programs created yet.</p>
+          )}
         </div>
-      </div>
 
-      {/* Sidebar */}
-      <div style={styles.sidebar}>
-        <button
-          style={styles.closeButton}
-          onClick={toggleSidebar}
-        >
-          Close
-        </button>
-        <h2>Welcome, {trainerName}!</h2>
-        <button
-          style={styles.button}
-          onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
-          onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
-          onClick={() => navigate('/trainer-profile')}
-        >
-          Profile
-        </button>
-        <button
-          style={styles.button}
-          onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
-          onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
+        {message && <p style={styles.message}>{message}</p>}
       </div>
-
-      {/* Main Content */}
-      <div style={styles.content}>
-        <h1 style={styles.heading}>Welcome to the Trainer Dashboard</h1>
-        <p style={styles.subheading}>Manage your fitness programs and clients here.</p>
-        <button
-          style={styles.createProgramButton}
-          onMouseOver={(e) => (e.target.style.backgroundColor = styles.createProgramButtonHover.backgroundColor)}
-          onMouseOut={(e) => (e.target.style.backgroundColor = styles.createProgramButton.backgroundColor)}
-          onClick={handleCreateProgram}
-        >
-          Create Program
-        </button>
-      </div>
-
-      {/* Footer */}
       <Footer />
-    </div>
+    </>
   );
 }
 
