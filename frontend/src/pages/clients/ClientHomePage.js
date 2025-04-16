@@ -3,6 +3,7 @@ import ClientNavBar from './ClientNavBar'; // Import the ClientNavBar component
 import Footer from '../../components/Footer';
 import {jwtDecode} from 'jwt-decode'; // Correct import for jwt-decode
 import { getFitnessPrograms } from '../../services/api'; // Import the API function
+import { createBooking } from '../../services/api'; // Import the booking API function
 
 function ClientHomePage() {
   const [clientName, setClientName] = useState(''); // State to store the client's name
@@ -10,6 +11,7 @@ function ClientHomePage() {
   const [nutritionists, setNutritionists] = useState([]); // State to store nutritionists
   const [fitnessPrograms, setFitnessPrograms] = useState([]); // State to store fitness programs
   const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [startDate, setStartDate] = useState(''); // State for start date
 
   const styles = {
     container: {
@@ -68,7 +70,7 @@ function ClientHomePage() {
     searchBar: {
       marginBottom: '1rem',
       padding: '0.8rem',
-      width: '100%',
+      width: '70%',
       border: '1px solid #ccc',
       borderRadius: '4px',
     },
@@ -137,6 +139,82 @@ function ClientHomePage() {
     program.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+    // Handle start date change
+    const handleStartDateChange = (programId, date) => {
+      setStartDate((prevDates) => ({
+        ...prevDates,
+        [programId]: date, // Update the start date for the specific program
+      }));
+    };
+
+  // Handle booking a program
+  const handleBookProgram = async (programId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('You must be logged in to book a program.');
+        return;
+      }
+  
+      // Decode the token to get the user's details
+      const decoded = jwtDecode(token);
+      if (decoded.role !== 'client') {
+        alert('Only clients can book programs.');
+        return;
+      }
+  
+    // Check if the program is already booked
+    const existingBookingResponse = await fetch(`http://localhost:5000/api/bookings`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (existingBookingResponse.ok) {
+      const existingBookings = await existingBookingResponse.json();
+      const isAlreadyBooked = existingBookings.some(
+        (booking) => booking.program._id === programId
+      );
+
+      if (isAlreadyBooked) {
+        alert('You have already booked this program.');
+        return;
+      }
+    }
+
+
+      // Prepare booking data
+      const bookingData = {
+        programId, // ID of the program being booked
+        clientId: decoded.id, // ID of the client making the booking
+        bookingDate: new Date().toISOString(), // Current date as the booking date
+        startDate: startDate[programId], // Start date for the program
+      };
+  
+      // Send the booking request with the authorization token and booking data
+      await createBooking(bookingData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      alert('Program booked successfully!');
+    } catch (error) {
+      console.error('Failed to book program:', error.response?.data || error.message);
+  
+      // Handle specific error cases
+      if (error.response?.status === 401) {
+        alert('You are not authorized to book this program. Please log in.');
+      } else if (error.response?.status === 400) {
+        alert('Invalid program ID or booking request.');
+      } else if (error.response?.status === 403) {
+        alert('Only clients can book programs.');
+      } else {
+        alert('Failed to book program. Please try again.');
+      }
+    }
+  };
+
   return (
     <>
       <div style={styles.container}>
@@ -185,14 +263,34 @@ function ClientHomePage() {
             />
 
             {/* Display Filtered Programs */}
-            {filteredPrograms.map((program) => (
-              <div key={program._id} style={styles.item}>
-                <h3>{program.name}</h3>
-                <p>Description: {program.description}</p>
-                <p>Duration: {program.duration} weeks</p>
-                <p>Price: ${program.price}</p>
-              </div>
-            ))}
+            {fitnessPrograms
+              .filter((program) =>
+                program.name.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((program) => (
+                <div key={program._id} style={styles.item}>
+                  <h3>{program.name}</h3>
+                  <p>Description: {program.description}</p>
+                  <p>Duration: {program.duration} weeks</p>
+                  <p>Price: ${program.price}</p>
+                  <p> Select Starting Date: {}
+                  <input
+                    type="date"
+                    value={startDate[program._id] || ''} // Use the start date for this program
+                    onChange={(e) =>
+                      handleStartDateChange(program._id, e.target.value)
+                    }
+                    style={styles.datePicker}
+                  />
+                  <button
+                    onClick={() => handleBookProgram(program._id)}
+                    disabled={!startDate[program._id]} // Disable button if no date is selected
+                  >
+                    Book Now
+                  </button>
+                  </p>
+                </div>
+              ))}
           </div>
         </div>
       </div>

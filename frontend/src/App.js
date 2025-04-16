@@ -12,7 +12,7 @@ import NutritionistProfile from './pages/nutritionists/NutritionistProfile';
 import NutritionistProgramCreation from './pages/nutritionists/NutritionistProgramCreation'; // Import the new component
 import TrainerProfile from './pages/trainers/TrainerProfile';
 import TrainerProgramCreation from './pages/trainers/TrainerProgramCreation';
-
+import BookedPrograms from './pages/clients/BookedPrograms';
 
 
 
@@ -42,6 +42,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+        path="/booked-programs"
+        element={
+          <ProtectedRoute>
+            <BookedPrograms />
+          </ProtectedRoute>
+        }
+        />
+
 
 
         <Route
