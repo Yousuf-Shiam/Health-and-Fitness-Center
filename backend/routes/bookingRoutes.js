@@ -41,7 +41,7 @@ router.get('/', protect, async (req, res) => {
       },
     })
     .populate('client', 'name');
-    
+
     res.status(200).json(bookings);
   } catch (error) {
     res.status(400).json({ message: 'Failed to fetch bookings', error });
@@ -85,6 +85,27 @@ router.delete('/:id', protect, async (req, res) => {
     res.status(200).json({ message: 'Booking deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to delete booking', error });
+  }
+});
+
+// @desc    Reschedule booking
+// @route   PUT /api/bookings/:id/reschedule
+// @access  Private
+router.put('/:id/reschedule', async (req, res) => {
+  const { startDate } = req.body;
+
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    booking.startDate = startDate;
+    const updatedBooking = await booking.save();
+
+    res.status(200).json(updatedBooking);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
