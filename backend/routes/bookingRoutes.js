@@ -33,7 +33,15 @@ router.post('/', protect, async (req, res) => {
 //Get bookings for a client
 router.get('/', protect, async (req, res) => {
   try {
-    const bookings = await Booking.find({ client: req.user.id }).populate('program');
+    const bookings = await Booking.find({ client: req.user.id }).populate({
+      path: 'program',
+      populate: {
+        path: 'creator', // Populate the creator field inside the program
+        select: 'name role', // Select only the name and role fields
+      },
+    })
+    .populate('client', 'name');
+    
     res.status(200).json(bookings);
   } catch (error) {
     res.status(400).json({ message: 'Failed to fetch bookings', error });

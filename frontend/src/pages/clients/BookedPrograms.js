@@ -214,10 +214,20 @@ const BookedPrograms = () => {
         bookings.map((booking) => (
           <div key={booking._id} style={styles.bookingCard}>
             <h3>Program: {booking.program?.name || 'N/A'}</h3>
+
+            <p>
+                {booking.program?.creator?.role === "trainer" ? (
+                  <>
+                  <p>Trainer: {booking.program?.creator?.name}</p>
+                  </>
+                ) : booking.program?.creator?.role === "nutritionist" ? (
+                  
+                  <p>Nutritionist: {booking.program?.creator?.name}</p>
+                ) : null}
+            </p>
             <p>Description: {booking.program?.description || 'N/A'}</p>
             <p>Duration: {booking.program?.duration || 'N/A'} weeks</p>
             <p>Price: ${booking.program?.price || 'N/A'}</p>
-            <p>Client: {booking.client?.name || 'N/A'}</p>
             <p>Starting Date: {booking.startDate ? new Date(booking.startDate).toLocaleDateString() : 'N/A'}</p>
             <p>Status: {booking.status}</p>
             {booking.status === 'cancelled' ? (

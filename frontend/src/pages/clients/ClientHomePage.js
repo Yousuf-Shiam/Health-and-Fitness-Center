@@ -275,7 +275,6 @@ function ClientHomePage() {
                   <p>
                   {program.creator.role === "trainer" ? (
                     <>
-                    <p></p>
                     <p>Trainer: {program.creator.name}</p>
                     </>
                   ) : program.creator.role === "nutritionist" ? (
