@@ -28,13 +28,12 @@ const generateReceipt = (bookingId, clientName, serviceName, amount, res) => {
 
     // Wait for the file to be written, then send it as a response
     writeStream.on('finish', () => {
+        console.log('PDF generated successfully');
         res.download(filePath, `receipt-${bookingId}.pdf`, (err) => {
             if (err) {
                 console.error('Error sending the file:', err);
                 res.status(500).send('Error generating receipt');
             }
-
-            // Optionally delete the file after sending
             fs.unlink(filePath, (unlinkErr) => {
                 if (unlinkErr) console.error('Error deleting the file:', unlinkErr);
             });

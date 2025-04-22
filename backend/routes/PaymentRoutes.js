@@ -4,6 +4,7 @@ const { generateReceipt } = require('../models/PaymentModel');
 
 // Route to handle "Pay Now" and generate a receipt
 router.post('/generate-receipt', (req, res) => {
+    console.log('Request received:', req.body);
     const { bookingId, clientName, serviceName, amount } = req.body;
 
     if (!bookingId || !clientName || !serviceName || !amount) {
