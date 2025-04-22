@@ -197,6 +197,7 @@ function ClientHomePage() {
           Authorization: `Bearer ${token}`,
         },
       });
+        
   
       alert('Program booked successfully!');
     } catch (error) {
@@ -270,6 +271,19 @@ function ClientHomePage() {
               .map((program) => (
                 <div key={program._id} style={styles.item}>
                   <h3>{program.name}</h3>
+
+                  <p>
+                  {program.creator.role === "trainer" ? (
+                    <>
+                    <p></p>
+                    <p>Trainer: {program.creator.name}</p>
+                    </>
+                  ) : program.creator.role === "nutritionist" ? (
+                    
+                    <p>Nutritionist: {program.creator.name}</p>
+                  ) : null}
+                  </p>
+
                   <p>Description: {program.description}</p>
                   <p>Duration: {program.duration} weeks</p>
                   <p>Price: ${program.price}</p>
