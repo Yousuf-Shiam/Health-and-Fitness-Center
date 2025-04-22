@@ -306,7 +306,7 @@ const BookedPrograms = () => {
                   Go Back
                 </button>
               </>
-            ) : (
+            ) : booking.status === 'pending' ? (
               <>
                 <button
                   onClick={() => handleCancelBooking(booking._id, 'cancelled')}
@@ -321,8 +321,25 @@ const BookedPrograms = () => {
                   Confirm
                 </button>
               </>
-            )}
-            {booking.status !== 'cancelled' && (
+            ): booking.status === 'active' ? (
+              <>
+                <button
+                  onClick={() => handleUpdateStatus(booking._id, 'completed')}
+                  style={styles.updateButton}
+                >
+                  Mark as Completed
+                </button>
+              </>
+            ) : (
+            <button
+              onClick={() => handleDeleteBooking(booking._id)}
+              style={styles.deleteButton}
+            >
+              Delete
+            </button>
+            )
+            }
+            {(booking.status !== 'cancelled' && booking.status !== 'active' && booking.status !== 'completed' ) && (
   <>
     <button
       onClick={() => {

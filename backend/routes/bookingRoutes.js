@@ -109,5 +109,36 @@ router.put('/:id/reschedule', async (req, res) => {
   }
 });
 
+// @desc    Get bookings for projects created by the logged-in nutritionist
+// @route   GET /api/bookings/nutritionist
+// @access  Private (Nutritionist)
+router.get('/nutritionist', protect, async (req, res) => {
+  try {
+    // Ensure the user has the 'nutritionist' role
+    if (req.user.role !== 'nutritionist') {
+      return res.status(403).json({ message: 'Only nutritionists can view these bookings.' });
+    }
+
+    // Fetch bookings where the program's creator is the logged-in nutritionist
+    const bookings = await Booking.find()
+      .populate({
+        path: 'program',
+        match: { creator: req.user.id }, // Match programs created by the logged-in nutritionist
+        populate: {
+          path: 'creator',
+          select: 'name role', // Select only the name and role fields
+        },
+      })
+      .populate('client', 'name'); // Populate the client field with the name
+
+    // Filter out bookings where the program is null (not created by this nutritionist)
+    const filteredBookings = bookings.filter((booking) => booking.program !== null);
+
+    res.status(200).json(filteredBookings);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch bookings', error: error.message });
+  }
+});
+
 
 module.exports = router;
