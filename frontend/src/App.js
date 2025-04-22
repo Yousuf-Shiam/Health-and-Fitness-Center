@@ -13,6 +13,7 @@ import NutritionistProgramCreation from './pages/nutritionists/NutritionistProgr
 import TrainerProfile from './pages/trainers/TrainerProfile';
 import TrainerProgramCreation from './pages/trainers/TrainerProgramCreation';
 import BookedPrograms from './pages/clients/BookedPrograms';
+import BookedProjects from './pages/nutritionists/bookedProjects'; // Import the component
 
 
 
@@ -93,14 +94,23 @@ function App() {
             </ProtectedRoute>
           }
         />
-<Route
-  path="/nutritionist-create-program"
-  element={
-    <ProtectedRoute>
-      <NutritionistProgramCreation />
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/nutritionist-create-program"
+          element={
+            <ProtectedRoute>
+              <NutritionistProgramCreation />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/nutritionist-booked-projects"
+          element={
+            <ProtectedRoute>
+              <BookedProjects />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       </Router>
       
