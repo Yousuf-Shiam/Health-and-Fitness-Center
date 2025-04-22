@@ -21,6 +21,13 @@ function NutritionistHomePage() {
         const decoded = jwtDecode(token);
         console.log('Decoded Token:', decoded); // Debugging: Log decoded token
     
+        //Fetch user details to get the nutritionist's name
+        const userResponse = await fetch(`http://localhost:5000/api/users/${decoded.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         // Fetch all programs
         const programsResponse = await fetch('http://localhost:5000/api/programs', {
           headers: {
@@ -65,6 +72,13 @@ function NutritionistHomePage() {
     
         console.log('Programs with Bookings:', programsWithBookings); // Debugging: Log programs with bookings
         setNutritionistPrograms(programsWithBookings);
+
+        const userData = await userResponse.json();
+        if (!userResponse.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+        console.log('Fetched User Data:', userData); // Debugging: Log fetched user data
+        setNutritionistName(userData.name); // Set the nutritionist's name from the decoded token
       } catch (error) {
         console.error('Error fetching data:', error);
         setMessage('Failed to load data. Please try again.');
