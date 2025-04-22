@@ -14,7 +14,7 @@ import TrainerProfile from './pages/trainers/TrainerProfile';
 import TrainerProgramCreation from './pages/trainers/TrainerProgramCreation';
 import BookedPrograms from './pages/clients/BookedPrograms';
 import BookedProjects from './pages/nutritionists/bookedProjects'; // Import the component
-
+import Payment from './pages/clients/Payment';
 
 
 function App() {
@@ -93,6 +93,9 @@ function App() {
               <NutritionistProfile />
             </ProtectedRoute>
           }
+        />
+        <Route
+         path="/payment/:bookingId" element={<Payment />} 
         />
         <Route
           path="/nutritionist-create-program"
