@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {jwtDecode} from 'jwt-decode'; // Import jwt-decode to decode the token
 import { deleteBooking } from '../../services/api';
 import ClientNavBar from './ClientNavBar';
+import { useNavigate } from 'react-router-dom';
 
 const BookedPrograms = () => {
   const [bookings, setBookings] = useState([]);
@@ -11,6 +12,7 @@ const BookedPrograms = () => {
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [newStartDate, setNewStartDate] = useState('');
+  const navigate = useNavigate(); // Initialize the useNavigate hook
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -236,9 +238,9 @@ const BookedPrograms = () => {
   };
 
   const handlePayment = (bookingId) => {
-    alert(`Redirecting to payment for booking ID: ${bookingId}`);
-    // Add logic to integrate with a payment gateway here
-  };
+    console.log(`Redirecting to payment for booking ID: ${bookingId}`);
+    navigate(`/payment/${bookingId}`); // Redirect to the payment page
+}
 
   if (loading) {
     return <p>Loading bookings...</p>;

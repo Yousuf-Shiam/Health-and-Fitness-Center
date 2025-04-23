@@ -8,6 +8,7 @@ export const createUser = (userData) => API.post('/users', userData);
 export const loginUser = (loginData) => API.post('/users/login', loginData); // Login API
 export const getUsers = () => API.get('/users');
 export const updateUser = (id, userData) => API.put(`/users/${id}`, userData);
+export const getUserById = (userId) => API.get(`/users/${userId}`);
 // Program-related API calls
 export const createFitnessService = (programData) => API.post('/programs', programData); // Add this function
 export const getFitnessPrograms = () => API.get('/programs');
