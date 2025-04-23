@@ -139,6 +139,32 @@ router.get('/nutritionist', protect, async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch bookings', error: error.message });
   }
 });
+router.get('/:id', protect, async (req, res) => {
+  try {
+      const booking = await Booking.findById(req.params.id).populate({
+          path: 'program',
+          populate: {
+              path: 'creator',
+              select: 'name role',
+          },
+      });
+
+      if (!booking) {
+          return res.status(404).json({ message: 'Booking not found' });
+      }
+
+      res.status(200).json({
+          clientName: booking.client.name,
+          email: booking.client.email,
+          programName: booking.program.name,
+          amount: booking.program.price,
+          fitnessGoals: booking.client.fitnessGoals,
+          preferences: booking.client.preferences,
+      });
+  } catch (error) {
+      res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
 
 
 module.exports = router;

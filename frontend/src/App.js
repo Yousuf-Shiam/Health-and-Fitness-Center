@@ -15,6 +15,7 @@ import TrainerProgramCreation from './pages/trainers/TrainerProgramCreation';
 import BookedPrograms from './pages/clients/BookedPrograms';
 import BookedProjects from './pages/nutritionists/bookedProjects'; // Import the component
 import Payment from './pages/clients/Payment';
+import DemoPayment from './pages/clients/DemoPayment'; // Import the demo payment page
 
 
 function App() {
@@ -53,7 +54,8 @@ function App() {
         }
         />
 
-
+<Route path="/payment" element={<Payment />} />
+<Route path="/demo-payment" element={<DemoPayment />} />
 
         <Route
           path="/trainer-home"

@@ -1,90 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Payment = () => {
-    const { bookingId } = useParams(); // Assuming bookingId is passed as a route parameter
-    const [paymentDetails, setPaymentDetails] = useState({
-        clientName: '',
-        serviceName: '',
-        amount: '',
-        email: '',
-        fitnessGoals: '',
-        preferences: '',
-    });
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+    const navigate = useNavigate(); // Initialize navigate
 
-    // Fetch booking and user details when the component loads
-    useEffect(() => {
-        const fetchPaymentDetails = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    throw new Error('No token found');
-                }
-
-                // Fetch booking details
-                const bookingResponse = await axios.get(`/api/bookings/${bookingId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                const { clientName, serviceName, amount } = bookingResponse.data;
-
-                // Fetch user details
-                const userResponse = await axios.get(`/api/users/${bookingResponse.data.clientId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                const { email, fitnessGoals, preferences } = userResponse.data;
-
-                setPaymentDetails({
-                    clientName,
-                    serviceName,
-                    amount,
-                    email,
-                    fitnessGoals,
-                    preferences,
-                });
-                setLoading(false);
-            } catch (err) {
-                setError('Failed to fetch payment details');
-                setLoading(false);
-            }
-        };
-
-        fetchPaymentDetails();
-    }, [bookingId]);
-    
-
-    const handlePayNow = async () => {
-        try {
-            const response = await axios.post(
-                '/api/payments/generate-receipt',
-                {
-                    bookingId,
-                    clientName: paymentDetails.clientName,
-                    serviceName: paymentDetails.serviceName,
-                    amount: paymentDetails.amount,
-                },
-                {
-                    responseType: 'blob', // To handle the PDF file
-                }
-            );
-
-            // Trigger file download
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', `receipt-${bookingId}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-        } catch (err) {
-            alert('Failed to process payment');
+    const handleSubmit = (event) => {
+        event.preventDefault(); // Prevent the default form submission behavior
+        if (!selectedPaymentMethod) {
+            alert('Please select a payment method.');
+            return;
         }
+        console.log(`Proceeding with payment method: ${selectedPaymentMethod}`);
+        // Navigate to the demo payment page
+        navigate('/demo-payment'); // Replace '/demo-payment' with the actual route for the demo payment page
     };
-
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>{error}</p>;
 
     const styles = {
         form: {
@@ -94,13 +24,6 @@ const Payment = () => {
             backgroundColor: '#ffffff',
             borderRadius: '8px',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        },
-        input: {
-            width: '100%',
-            marginBottom: '1rem',
-            padding: '0.8rem',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
         },
         button: {
             width: '100%',
@@ -113,19 +36,58 @@ const Payment = () => {
             borderRadius: '4px',
             cursor: 'pointer',
         },
+        option: {
+            marginBottom: '1rem',
+            padding: '0.8rem',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            textAlign: 'center',
+            backgroundColor: '#f9f9f9',
+        },
     };
 
     return (
-        <form style={styles.form}>
-            <h2>Payment Details</h2>
-            <input type="text" value={paymentDetails.clientName} readOnly style={styles.input} />
-            <input type="text" value={paymentDetails.email} readOnly style={styles.input} />
-            <input type="text" value={paymentDetails.serviceName} readOnly style={styles.input} />
-            <input type="text" value={`$${paymentDetails.amount}`} readOnly style={styles.input} />
-            <input type="text" value={paymentDetails.fitnessGoals} readOnly style={styles.input} />
-            <input type="text" value={paymentDetails.preferences} readOnly style={styles.input} />
-            <button type="button" onClick={handlePayNow} style={styles.button}>
-                Pay Now
+        <form style={styles.form} onSubmit={handleSubmit}>
+            <h2>Choose Payment Method</h2>
+            <div style={styles.option}>
+                <input
+                    type="radio"
+                    id="card"
+                    name="paymentMethod"
+                    value="card"
+                    onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                />
+                <label htmlFor="card" style={{ marginLeft: '0.5rem' }}>
+                    Credit/Debit Card
+                </label>
+            </div>
+            <div style={styles.option}>
+                <input
+                    type="radio"
+                    id="mobileBanking"
+                    name="paymentMethod"
+                    value="mobileBanking"
+                    onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                />
+                <label htmlFor="mobileBanking" style={{ marginLeft: '0.5rem' }}>
+                    Mobile Banking
+                </label>
+            </div>
+            <div style={styles.option}>
+                <input
+                    type="radio"
+                    id="upi"
+                    name="paymentMethod"
+                    value="upi"
+                    onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                />
+                <label htmlFor="upi" style={{ marginLeft: '0.5rem' }}>
+                    UPI
+                </label>
+            </div>
+            <button type="submit" style={styles.button}>
+                Proceed to Pay
             </button>
         </form>
     );
