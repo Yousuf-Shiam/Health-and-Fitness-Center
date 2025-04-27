@@ -24,6 +24,8 @@ export const updateBookingStatus = (bookingId, statusData) =>
 
 export const deleteBooking = (bookingId) =>
   API.delete(`/bookings/${bookingId}`); // Delete booking
+export const createMealPlan = (mealPlanData) => API.post('/mealplans', mealPlanData);
+export const getMealPlans = (userId) => API.get(`/mealplans/${userId}`);
 
 
 export default API;

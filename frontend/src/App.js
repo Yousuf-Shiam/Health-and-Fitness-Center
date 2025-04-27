@@ -16,6 +16,8 @@ import BookedPrograms from './pages/clients/BookedPrograms';
 import BookedProjects from './pages/nutritionists/bookedProjects'; // Import the component
 import Payment from './pages/clients/Payment';
 import DemoPayment from './pages/clients/DemoPayment'; // Import the demo payment page
+import CreateMealPlan from './pages/clients/createmealplan';
+import Mealplan from './pages/clients/Mealplan';
 
 
 function App() {
@@ -113,6 +115,22 @@ function App() {
           element={
             <ProtectedRoute>
               <BookedProjects />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create-meal-plan"
+          element={
+            <ProtectedRoute>
+              <CreateMealPlan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mealplan/:userId"
+          element={
+            <ProtectedRoute>
+              <Mealplan />
             </ProtectedRoute>
           }
         />
