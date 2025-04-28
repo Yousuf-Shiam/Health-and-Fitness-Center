@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db'); // Correct import
 const cors = require('cors');
 const paymentRoutes = require('./routes/PaymentRoutes')
+const mealplanRoutes = require('./routes/mealplanRoutes');
 dotenv.config();
 
 // Connect to MongoDB
@@ -20,7 +21,7 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/programs', require('./routes/programRoutes'));    
 app.use('/api/bookings', require('./routes/bookingRoutes'));
 app.use('/api/payments', paymentRoutes);
-app.use('/api/mealplans', require('./routes/mealplanRoutes'));
+app.use('/api/mealplans', mealplanRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
