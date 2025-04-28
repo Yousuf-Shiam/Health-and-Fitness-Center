@@ -5,6 +5,8 @@ import Footer from '../../components/Footer'; // Import the Footer component
 
 function CreateMealPlan() {
   const [formData, setFormData] = useState({
+    name: '', // Name of the meal plan
+    description: '', // Description of the meal plan
     weight: '',
     fitnessGoal: '',
     preferences: '',
@@ -35,6 +37,8 @@ function CreateMealPlan() {
       console.log('API Response:', response.data); // Debugging API response
       setMessage('Meal Plan created successfully!');
       setFormData({
+        name: '',
+        description: '',
         weight: '',
         fitnessGoal: '',
         preferences: '',
@@ -113,6 +117,23 @@ function CreateMealPlan() {
         <h1 style={styles.heading}>Create a Meal Plan</h1>
         <p style={styles.subheading}>Fill out the form below to create a personalized meal plan.</p>
         <form style={styles.form} onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            style={styles.input}
+            placeholder="Meal Plan Name"
+            required
+          />
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            style={{ ...styles.input, height: '100px' }}
+            placeholder="Meal Plan Description"
+            required
+          />
           <input
             type="number"
             name="weight"
