@@ -1,15 +1,18 @@
 const express = require('express');
 const { createMealPlan, getMealPlans } = require('../controllers/mealplanController');
+const { check, validationResult } = require('express-validator');
 const router = express.Router();
 
-const { check, validationResult } = require('express-validator');
-
+// Route to create a meal plan
 router.post(
   '/',
   [
     check('userId', 'User ID is required').not().isEmpty(),
     check('weight', 'Weight must be a number').isNumeric(),
     check('fitnessGoal', 'Fitness goal is required').not().isEmpty(),
+    check('mealPlan', 'Meal plan must be an array').isArray(),
+    check('mealPlan.*.meal', 'Each meal must have a name').not().isEmpty(),
+    check('mealPlan.*.items', 'Each meal must have items').not().isEmpty(),
   ],
   (req, res, next) => {
     const errors = validationResult(req);
@@ -20,6 +23,11 @@ router.post(
   },
   createMealPlan
 );
-router.get('/:userId', getMealPlans); // Get meal plans for a user
+
+// Route to get meal plans for a specific user
+router.get('/:userId', (req, res, next) => {
+  console.log('Get Meal Plans Request for User ID:', req.params.userId); // Debugging userId
+  next();
+}, getMealPlans);
 
 module.exports = router;

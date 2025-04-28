@@ -126,14 +126,16 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/mealplan/:userId"
-          element={
-            <ProtectedRoute>
-              <Mealplan />
-            </ProtectedRoute>
-          }
-        />
+
+
+<Route
+  path="/mealplans"
+  element={
+    <ProtectedRoute>
+      <Mealplan />
+    </ProtectedRoute>
+  }
+/>
       </Routes>
       </Router>
       
