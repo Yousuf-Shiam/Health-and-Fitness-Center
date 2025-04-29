@@ -181,6 +181,24 @@ function ClientNavBar() {
           style={styles.button}
           onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
           onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
+          onClick={() => navigate('/mealplans')} // Navigate to Meal Plans page
+        >
+          Meal Plans
+        </button>
+
+          <button
+          style={styles.button}
+          onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
+          onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
+          onClick={() => navigate('/meal-tracking')}
+        >
+          Meal Tracking & Goals
+        </button>
+...
+        <button
+          style={styles.button}
+          onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
+          onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
           onClick={handleLogout}
         >
           Logout

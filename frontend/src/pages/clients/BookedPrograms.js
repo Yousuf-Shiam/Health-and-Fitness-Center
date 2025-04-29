@@ -2,11 +2,17 @@ import React, { useEffect, useState } from 'react';
 import {jwtDecode} from 'jwt-decode'; // Import jwt-decode to decode the token
 import { deleteBooking } from '../../services/api';
 import ClientNavBar from './ClientNavBar';
+import { useNavigate } from 'react-router-dom';
 
 const BookedPrograms = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null); // State to store decoded user information
+
+  const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
+  const [newStartDate, setNewStartDate] = useState('');
+  const navigate = useNavigate(); // Initialize the useNavigate hook
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -43,6 +49,46 @@ const BookedPrograms = () => {
 
     fetchBookings();
   }, []);
+  
+  const handleReschedule = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('You must be logged in to reschedule a booking.');
+        return;
+      }
+  
+      const response = await fetch(`http://localhost:5000/api/bookings/${selectedBookingId}/reschedule`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ startDate: newStartDate }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to reschedule booking');
+      }
+  
+      const updatedBooking = await response.json();
+  
+      // Update the booking's start date in the state
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking._id === selectedBookingId ? { ...booking, startDate: updatedBooking.startDate } : booking
+        )
+      );
+  
+      alert('Booking rescheduled successfully!');
+      setIsRescheduleModalOpen(false);
+      setSelectedBookingId(null);
+      setNewStartDate('');
+    } catch (error) {
+      console.error('Failed to reschedule booking:', error.message);
+      alert('Failed to reschedule booking. Please try again.');
+    }
+  };
 
 
   const handleCancelBooking = async (bookingId, newStatus) => {
@@ -192,14 +238,15 @@ const BookedPrograms = () => {
   };
 
   const handlePayment = (bookingId) => {
-    alert(`Redirecting to payment for booking ID: ${bookingId}`);
-    // Add logic to integrate with a payment gateway here
-  };
+    console.log(`Redirecting to payment for booking ID: ${bookingId}`);
+    navigate(`/payment/${bookingId}`); // Redirect to the payment page
+}
 
   if (loading) {
     return <p>Loading bookings...</p>;
   }
 
+  
 
 
   return (
@@ -214,10 +261,20 @@ const BookedPrograms = () => {
         bookings.map((booking) => (
           <div key={booking._id} style={styles.bookingCard}>
             <h3>Program: {booking.program?.name || 'N/A'}</h3>
+
+            <p>
+                {booking.program?.creator?.role === "trainer" ? (
+                  <>
+                  <p>Trainer: {booking.program?.creator?.name}</p>
+                  </>
+                ) : booking.program?.creator?.role === "nutritionist" ? (
+                  
+                  <p>Nutritionist: {booking.program?.creator?.name}</p>
+                ) : null}
+            </p>
             <p>Description: {booking.program?.description || 'N/A'}</p>
             <p>Duration: {booking.program?.duration || 'N/A'} weeks</p>
             <p>Price: ${booking.program?.price || 'N/A'}</p>
-            <p>Client: {booking.client?.name || 'N/A'}</p>
             <p>Starting Date: {booking.startDate ? new Date(booking.startDate).toLocaleDateString() : 'N/A'}</p>
             <p>Status: {booking.status}</p>
             {booking.status === 'cancelled' ? (
@@ -251,7 +308,7 @@ const BookedPrograms = () => {
                   Go Back
                 </button>
               </>
-            ) : (
+            ) : booking.status === 'pending' ? (
               <>
                 <button
                   onClick={() => handleCancelBooking(booking._id, 'cancelled')}
@@ -266,7 +323,66 @@ const BookedPrograms = () => {
                   Confirm
                 </button>
               </>
-            )}
+            ): booking.status === 'active' ? (
+              <>
+                <button
+                  onClick={() => handleUpdateStatus(booking._id, 'completed')}
+                  style={styles.updateButton}
+                >
+                  Mark as Completed
+                </button>
+              </>
+            ) : (
+            <button
+              onClick={() => handleDeleteBooking(booking._id)}
+              style={styles.deleteButton}
+            >
+              Delete
+            </button>
+            )
+            }
+            {(booking.status !== 'cancelled' && booking.status !== 'active' && booking.status !== 'completed' ) && (
+  <>
+    <button
+      onClick={() => {
+        setIsRescheduleModalOpen(true);
+        setSelectedBookingId(booking._id);
+      }}
+      style={styles.rescheduleButton}
+    >
+      Reschedule
+    </button>
+  </>
+)}
+
+{isRescheduleModalOpen && (
+  <div style={styles.modalOverlay}>
+    <div style={styles.modal}>
+      <h3>Reschedule Booking</h3>
+      <input
+        type="date"
+        value={newStartDate}
+        onChange={(e) => setNewStartDate(e.target.value)}
+        style={styles.input}
+      />
+      <div style={styles.modalButtonContainer}>
+        <button onClick={handleReschedule} style={styles.saveButton}>
+          Save
+        </button>
+        <button
+          onClick={() => {
+            setIsRescheduleModalOpen(false);
+            setSelectedBookingId(null);
+            setNewStartDate('');
+          }}
+          style={styles.cancelButton}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
           </div>
         ))
       )}
@@ -342,6 +458,49 @@ const styles = {
     padding: '0.5rem 1rem',
     marginTop: '0.5rem',
     backgroundColor: 'rgb(0, 44, 92)',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modal: {
+    backgroundColor: '#fff',
+    padding: '2rem',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    textAlign: 'center',
+    width: '300px',
+  },
+  modalButtonContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: '1rem',
+  },
+  rescheduleButton: {
+    padding: '0.5rem 1rem',
+    marginTop: '0.5rem',
+    backgroundColor: 'rgb(0, 163, 158)',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    marginLeft: '0.5rem',
+  },
+  saveButton: {
+    padding: '0.5rem 1rem',
+    backgroundColor: 'rgb(0, 107, 4)',
     color: '#fff',
     border: 'none',
     borderRadius: '4px',

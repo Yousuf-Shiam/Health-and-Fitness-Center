@@ -13,8 +13,12 @@ import NutritionistProgramCreation from './pages/nutritionists/NutritionistProgr
 import TrainerProfile from './pages/trainers/TrainerProfile';
 import TrainerProgramCreation from './pages/trainers/TrainerProgramCreation';
 import BookedPrograms from './pages/clients/BookedPrograms';
-
-
+import BookedProjects from './pages/nutritionists/bookedProjects'; // Import the component
+import Payment from './pages/clients/Payment';
+import DemoPayment from './pages/clients/DemoPayment'; // Import the demo payment page
+import CreateMealPlan from './pages/clients/createmealplan';
+import Mealplan from './pages/clients/Mealplan';
+import MealTrackingAndGoals from './pages/clients/MealTrackingAndGoals'; // Import the new page
 
 function App() {
   return (
@@ -31,9 +35,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
-       
-
         <Route
           path="/profile"
           element={
@@ -42,18 +43,16 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
-        path="/booked-programs"
-        element={
-          <ProtectedRoute>
-            <BookedPrograms />
-          </ProtectedRoute>
-        }
+          path="/booked-programs"
+          element={
+            <ProtectedRoute>
+              <BookedPrograms />
+            </ProtectedRoute>
+          }
         />
-
-
-
+        <Route path="/payment" element={<Payment />} />
+        <Route path="/demo-payment" element={<DemoPayment />} />
         <Route
           path="/trainer-home"
           element={
@@ -77,14 +76,8 @@ function App() {
               <NutritionistHomePage />
             </ProtectedRoute>
           }
-          
         />
-        <Route
-         path="/trainer-profile"
-         element={
-         <TrainerProfile />
-         } 
-        />
+        <Route path="/trainer-profile" element={<TrainerProfile />} />
         <Route
           path="/nutritionist-profile"
           element={
@@ -93,17 +86,49 @@ function App() {
             </ProtectedRoute>
           }
         />
-<Route
-  path="/nutritionist-create-program"
-  element={
-    <ProtectedRoute>
-      <NutritionistProgramCreation />
-    </ProtectedRoute>
-  }
-/>
+        <Route path="/payment/:bookingId" element={<Payment />} />
+        <Route
+          path="/nutritionist-create-program"
+          element={
+            <ProtectedRoute>
+              <NutritionistProgramCreation />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/nutritionist-booked-projects"
+          element={
+            <ProtectedRoute>
+              <BookedProjects />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create-meal-plan"
+          element={
+            <ProtectedRoute>
+              <CreateMealPlan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mealplans"
+          element={
+            <ProtectedRoute>
+              <Mealplan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/meal-tracking"
+          element={
+            <ProtectedRoute>
+              <MealTrackingAndGoals />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-      </Router>
-      
+    </Router>
   );
 }
 
