@@ -4,37 +4,38 @@ const mealplanSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: true, // Name of the meal plan
+      required: true,
     },
     description: {
       type: String,
-      required: true, // Description of the meal plan
+      required: true,
     },
     weight: {
       type: Number,
-      required: true, // Weight of the client
+      required: true,
     },
     fitnessGoal: {
       type: String,
-      enum: ['weight_loss', 'muscle_gain', 'maintenance'], // Fitness goal options
+      enum: ['weight_loss', 'muscle_gain', 'maintenance'],
       required: true,
     },
     preferences: {
-      type: String, // Dietary preferences (e.g., vegetarian, keto)
+      type: String,
     },
     mealPlan: [
       {
-        meal: { type: String, required: true }, // Name of the meal (e.g., Breakfast)
-        items: { type: [String], required: true }, // List of items in the meal
+        meal: { type: String, required: true },
+        items: { type: [String], required: true },
       },
     ],
     creator: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // Reference to the user who created the meal plan
+      ref: 'User',
       required: true,
     },
   },
-  { timestamps: true } // Automatically add createdAt and updatedAt fields
+  { timestamps: true }
 );
 
-module.exports = mongoose.model('MealPlan', mealplanSchema);
+// Explicitly specify the collection name as 'mealplans'
+module.exports = mongoose.model('MealPlan', mealplanSchema, 'mealplans');

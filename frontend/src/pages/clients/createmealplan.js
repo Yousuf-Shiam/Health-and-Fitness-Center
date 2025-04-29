@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createMealPlan } from '../../services/api'; // Import API function
+import {jwtDecode} from 'jwt-decode'; // Import jwt-decode
 import ClientNavBar from './ClientNavBar'; // Import the ClientNavBar component
 import Footer from '../../components/Footer'; // Import the Footer component
 
@@ -19,13 +20,21 @@ function CreateMealPlan() {
 
   const [message, setMessage] = useState('');
 
+  // Decode the JWT token to get the user ID
+  const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
+  let userId = null;
+  if (token) {
+    const decodedToken = jwtDecode(token);
+    userId = decodedToken.id; // Adjust this based on your token's payload structure
+  }
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleMealChange = (index, value) => {
     const updatedMealPlan = [...formData.mealPlan];
-    updatedMealPlan[index].items = value;
+    updatedMealPlan[index].items = value.split(',').map((item) => item.trim()); // Convert to array
     setFormData({ ...formData, mealPlan: updatedMealPlan });
   };
 
@@ -33,7 +42,9 @@ function CreateMealPlan() {
     e.preventDefault();
     console.log('Form Data:', formData); // Debugging form data
     try {
-      const response = await createMealPlan(formData);
+      const payload = { ...formData, creator: userId };
+      console.log('Payload being sent:', payload); // Log the payload
+      const response = await createMealPlan(payload); // Include userId in the payload
       console.log('API Response:', response.data); // Debugging API response
       setMessage('Meal Plan created successfully!');
       setFormData({

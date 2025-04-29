@@ -1,12 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { createMealPlan } = require('../controllers/mealplanController');
+const { createMealPlan, getMealPlans } = require('../controllers/mealplanController');
 const { protect } = require('../middleware/authMiddleware');
-const { check, validationResult } = require('express-validator');
+const { check } = require('express-validator');
 
-// @desc    Create a new meal plan
-// @route   POST /api/mealplans
-// @access  Private (Client)
 router.post(
   '/',
   protect,
@@ -22,4 +19,6 @@ router.post(
   createMealPlan
 );
 
-module.exports = router;
+router.get('/', protect, getMealPlans);
+
+module.exports = router; // Ensure the router is exported

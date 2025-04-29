@@ -6,6 +6,9 @@ const MealPlan = require('../models/MealplanModel'); // Import the MealPlan mode
 exports.createMealPlan = async (req, res) => {
   const { name, description, weight, fitnessGoal, preferences, mealPlan } = req.body;
 
+  console.log('Request Body:', req.body); // Debugging log
+  console.log('Authenticated User:', req.user); // Debugging log
+
   try {
     // Create a new meal plan
     const newMealPlan = await MealPlan.create({

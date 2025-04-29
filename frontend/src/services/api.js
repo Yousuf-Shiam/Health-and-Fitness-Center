@@ -3,6 +3,13 @@ import axios from 'axios';
 const API = axios.create({
   baseURL: 'http://localhost:5000/api', // Backend URL
 });
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`; // Add the token to the Authorization header
+  }
+  return config;
+});
 
 export const createUser = (userData) => API.post('/users', userData);
 export const loginUser = (loginData) => API.post('/users/login', loginData); // Login API
