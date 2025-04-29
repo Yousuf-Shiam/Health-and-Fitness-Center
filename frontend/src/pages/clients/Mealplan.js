@@ -86,7 +86,11 @@ function Mealplan() {
         // Decode the token to get the user ID
         const decoded = jwtDecode(token);
 
-        // Fetch user details using the ID from the decoded token
+        // Fetch meal plans for the client
+        const response = await getMealPlans();
+        setMealPlans(response.data);
+
+        // Optionally, fetch user details for the name
         const userResponse = await fetch(`http://localhost:5000/api/users/${decoded.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -99,10 +103,6 @@ function Mealplan() {
 
         const userData = await userResponse.json();
         setClientName(userData.name);
-
-        // Fetch meal plans for the client
-        const response = await getMealPlans(decoded.id);
-        setMealPlans(response.data);
       } catch (error) {
         console.error('Error fetching meal plans:', error);
       }
@@ -111,9 +111,10 @@ function Mealplan() {
     fetchMealPlans();
   }, []);
 
+
   return (
     <>
-      <div style={styles.container}>
+ <div style={styles.container}>
         <ClientNavBar />
         <div style={styles.content}>
           <h1 style={styles.heading}>Welcome, {clientName}!</h1>
@@ -125,7 +126,10 @@ function Mealplan() {
             {mealPlans.length > 0 ? (
               mealPlans.map((plan, index) => (
                 <div key={index} style={styles.item}>
-                  <h3>Meal Plan {index + 1}</h3>
+                  <h3>{plan.name}</h3>
+                  <p><strong>Description:</strong> {plan.description}</p>
+                  <p><strong>Fitness Goal:</strong> {plan.fitnessGoal}</p>
+                  <p><strong>Preferences:</strong> {plan.preferences || 'None'}</p>
                   <ul>
                     {plan.mealPlan.map((meal, mealIndex) => (
                       <li key={mealIndex}>

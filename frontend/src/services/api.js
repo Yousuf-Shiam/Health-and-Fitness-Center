@@ -34,7 +34,7 @@ export const deleteBooking = (bookingId) =>
 
 // Meal Plan-related API calls
 export const createMealPlan = (mealPlanData) => API.post('/mealplans', mealPlanData);
-export const getMealPlans = (userId) => API.get(`/mealplans/${userId}`);
+export const getMealPlans = () => API.get('/mealplans'); // Fetch meal plans for the authenticated user
 
 // Meal Tracking and Fitness Goals API calls (New)
 export const getFitnessGoals = (userId) => API.get(`/fitness-goals/${userId}`); // Fetch fitness goals for a user
