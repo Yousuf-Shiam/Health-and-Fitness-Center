@@ -124,6 +124,7 @@ function Mealplan() {
       border: 'none',
       borderRadius: '4px',
       cursor: 'pointer',
+      marginLeft: '10px',
     },
   };
 
@@ -286,7 +287,7 @@ function Mealplan() {
           </div>
 
           <button
-            style={styles.button}
+            style={{...styles.button, marginBottom: '2rem' }}
             onClick={() => (window.location.href = '/create-meal-plan')}
           >
             Create New Meal Plan
