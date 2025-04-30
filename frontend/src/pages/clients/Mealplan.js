@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ClientNavBar from './ClientNavBar';
 import Footer from '../../components/Footer';
-import { getMealPlans, getUsers, assignNutritionist } from '../../services/api';
+import { getMealPlans, getUsers, assignNutritionist, updateApprovalStatus } from '../../services/api';
 import {jwtDecode} from 'jwt-decode';
 
 function Mealplan() {
@@ -193,6 +193,19 @@ function Mealplan() {
     }
   };
 
+  const handleApproval = async (mealPlanId, approvalStatus) => {
+    try {
+      await updateApprovalStatus(mealPlanId, { approvalStatus });
+      alert(`Meal plan Re-assigned successfully!`);
+      // Refresh meal plans to reflect the updated status
+      const mealPlansResponse = await getMealPlans();
+      setMealPlans(mealPlansResponse.data);
+    } catch (error) {
+      console.error('Error updating approval status:', error);
+      alert('Failed to update approval status. Please try again.');
+    }
+  };
+
   return (
     <>
       <div style={styles.container}>
@@ -210,22 +223,50 @@ function Mealplan() {
                   <p><strong>Description:</strong> {plan.description}</p>
                   <p><strong>Fitness Goal:</strong> {plan.fitnessGoal}</p>
                   <p><strong>Preferences:</strong> {plan.preferences || 'None'}</p>
+                  <p><strong>Meals:</strong></p>
+                  <ul>
+                    {plan.mealPlan.map((meal, mealIndex) => (
+                      <li key={mealIndex}>
+                        <strong>{meal.meal}</strong>: {meal.items.join(', ')}
+                      </li>
+                    ))}
+                  </ul>
+
                   <p><strong>Approval Status:</strong> {plan.approvalStatus}</p>
-                  {plan.nutritionist ? (
+
+                  {plan.approvalStatus === 'rejected' ? (
                     <>
-                    <p style={styles.selectedNutritionist}>
-                      <strong>Assigned Nutritionist:</strong> {plan.nutritionist.name}
-                    </p>
-                    <button
-                      style={styles.button}
+                      <p style={styles.selectedNutritionist}>
+                        <strong>Assigned Nutritionist:</strong> {plan.nutritionist.name}
+                      </p>
+                      <button
+                        style={styles.button}
+                        onClick={() => handleApproval(plan._id, 'pending')}
+                      >
+                        Reassign to {plan.nutritionist.name}
+                      </button>
+                      <button
+                      style={{...styles.button, marginLeft: '10px' }}
                       onClick={() => handleOpenModal(plan._id)}
                     >
-                      Change Assigned Nutritionist
+                      Assign New Nutritionist
                     </button>
-                  </>
+                    </>
+                  ) : plan.nutritionist && plan.approvalStatus !== 'approved' ? (
+                    <>
+                      <p style={styles.selectedNutritionist}>
+                        <strong>Assigned Nutritionist:</strong> {plan.nutritionist.name}
+                      </p>
+                      <button
+                        style={styles.button}
+                        onClick={() => handleOpenModal(plan._id)}
+                      >
+                        Change Assigned Nutritionist
+                      </button>
+                    </>
                   ) : plan.approvalStatus === 'approved' ? (
                     <p style={styles.selectedNutritionist}>
-                      <strong>Assigned Nutritionist:</strong>{plan.nutritionist.name}
+                      <strong>Assigned Nutritionist:</strong> {plan.nutritionist.name}
                     </p>
                   ) : (
                     <button
