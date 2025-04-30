@@ -185,6 +185,15 @@ function NutritionistNavBar() {
         >
           Booked Projects
         </button>
+
+        <button
+          style={styles.button}
+          onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
+          onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
+          onClick={() => navigate('/nutritionist-mealplan-review')}
+        >
+          Review Meal Plans
+        </button>
         
         <button
           style={styles.button}

@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import ClientNavBar from './ClientNavBar'; // Import the ClientNavBar component
-import Footer from '../../components/Footer'; // Import the Footer component
-import { getMealPlans } from '../../services/api'; // Import the API function
-import {jwtDecode} from 'jwt-decode'; // Import jwt-decode
+import ClientNavBar from './ClientNavBar';
+import Footer from '../../components/Footer';
+import { getMealPlans, getUsers, assignNutritionist } from '../../services/api';
+import {jwtDecode} from 'jwt-decode';
 
 function Mealplan() {
-  const [mealPlans, setMealPlans] = useState([]); // State to store meal plans
-  const [clientName, setClientName] = useState(''); // State to store the client's name
+  const [mealPlans, setMealPlans] = useState([]);
+  const [clientName, setClientName] = useState('');
+  const [nutritionists, setNutritionists] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMealPlanId, setSelectedMealPlanId] = useState(null);
+  const [selectedNutritionistId, setSelectedNutritionistId] = useState(null);
 
   const styles = {
     container: {
@@ -71,11 +75,60 @@ function Mealplan() {
       cursor: 'pointer',
       fontSize: '16px',
     },
+    modalOverlay: {
+      position: 'fixed',
+      overflowY: 'auto',
+      overflowX: 'hidden',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000,
+      paddingTop: '3rem',
+    },
+    modal: {
+      backgroundColor: '#fff',
+      padding: '3rem',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+      width: '400px',
+    },
+    nutritionistItem: {
+      borderBottom: '1px solid #ccc',
+      padding: '1rem 0',
+    },
+    selectedNutritionist: {
+      backgroundColor: '#d1e7dd',
+      padding: '0.5rem',
+      borderRadius: '4px',
+    },
+    modalButton: {
+      marginTop: '1rem',
+      padding: '0.5rem 1rem',
+      backgroundColor: '#0f5132',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+    },
+    cancelButton: {
+      marginTop: '1rem',
+      padding: '0.5rem 1rem',
+      backgroundColor: '#d9534f',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+    },
   };
 
-  // Fetch client name and meal plans
   useEffect(() => {
-    const fetchMealPlans = async () => {
+    const fetchMealPlansAndNutritionists = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -83,14 +136,11 @@ function Mealplan() {
           return;
         }
 
-        // Decode the token to get the user ID
         const decoded = jwtDecode(token);
 
-        // Fetch meal plans for the client
-        const response = await getMealPlans();
-        setMealPlans(response.data);
+        const mealPlansResponse = await getMealPlans();
+        setMealPlans(mealPlansResponse.data);
 
-        // Optionally, fetch user details for the name
         const userResponse = await fetch(`http://localhost:5000/api/users/${decoded.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -103,24 +153,54 @@ function Mealplan() {
 
         const userData = await userResponse.json();
         setClientName(userData.name);
+
+        // Fetch all nutritionists
+        const nutritionistsResponse = await getUsers();
+        const filteredNutritionists = nutritionistsResponse.data.filter(
+          (user) => user.role === 'nutritionist'
+        );
+        setNutritionists(filteredNutritionists);
       } catch (error) {
-        console.error('Error fetching meal plans:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchMealPlans();
+    fetchMealPlansAndNutritionists();
   }, []);
 
+  const handleOpenModal = (mealPlanId) => {
+    setSelectedMealPlanId(mealPlanId);
+    setIsModalOpen(true);
+  };
+
+  const handleAssignNutritionist = async () => {
+    try {
+      if (!selectedNutritionistId) {
+        alert('Please select a nutritionist before confirming.');
+        return;
+      }
+      await assignNutritionist(selectedMealPlanId, { nutritionistId: selectedNutritionistId });
+      alert('Nutritionist assigned successfully!');
+      setIsModalOpen(false);
+      setSelectedMealPlanId(null);
+      setSelectedNutritionistId(null);
+      // Refresh meal plans to reflect the assigned nutritionist
+      const mealPlansResponse = await getMealPlans();
+      setMealPlans(mealPlansResponse.data);
+    } catch (error) {
+      console.error('Error assigning nutritionist:', error);
+      alert('Failed to assign nutritionist. Please try again.');
+    }
+  };
 
   return (
     <>
- <div style={styles.container}>
+      <div style={styles.container}>
         <ClientNavBar />
         <div style={styles.content}>
           <h1 style={styles.heading}>Welcome, {clientName}!</h1>
           <p style={styles.subheading}>Here are your created meal plans:</p>
 
-          {/* Meal Plans Section */}
           <div style={styles.section}>
             <h2 style={styles.sectionHeading}>Your Meal Plans</h2>
             {mealPlans.length > 0 ? (
@@ -130,13 +210,31 @@ function Mealplan() {
                   <p><strong>Description:</strong> {plan.description}</p>
                   <p><strong>Fitness Goal:</strong> {plan.fitnessGoal}</p>
                   <p><strong>Preferences:</strong> {plan.preferences || 'None'}</p>
-                  <ul>
-                    {plan.mealPlan.map((meal, mealIndex) => (
-                      <li key={mealIndex}>
-                        <strong>{meal.meal}:</strong> {meal.items.join(', ')}
-                      </li>
-                    ))}
-                  </ul>
+                  <p><strong>Approval Status:</strong> {plan.approvalStatus}</p>
+                  {plan.nutritionist ? (
+                    <>
+                    <p style={styles.selectedNutritionist}>
+                      <strong>Assigned Nutritionist:</strong> {plan.nutritionist.name}
+                    </p>
+                    <button
+                      style={styles.button}
+                      onClick={() => handleOpenModal(plan._id)}
+                    >
+                      Change Assigned Nutritionist
+                    </button>
+                  </>
+                  ) : plan.approvalStatus === 'approved' ? (
+                    <p style={styles.selectedNutritionist}>
+                      <strong>Assigned Nutritionist:</strong>{plan.nutritionist.name}
+                    </p>
+                  ) : (
+                    <button
+                      style={styles.button}
+                      onClick={() => handleOpenModal(plan._id)}
+                    >
+                      Assign Nutritionist
+                    </button>
+                  )}
                 </div>
               ))
             ) : (
@@ -146,7 +244,6 @@ function Mealplan() {
             )}
           </div>
 
-          {/* Button to Create New Meal Plan */}
           <button
             style={styles.button}
             onClick={() => (window.location.href = '/create-meal-plan')}
@@ -155,6 +252,53 @@ function Mealplan() {
           </button>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <h3>Select a Nutritionist</h3>
+            <ul>
+              {nutritionists.map((nutritionist) => (
+                <li
+                  key={nutritionist._id}
+                  style={{
+                    ...styles.nutritionistItem,
+                    ...(selectedNutritionistId === nutritionist._id
+                      ? { backgroundColor: '#d1e7dd' }
+                      : {}),
+                  }}
+                >
+                  <p><strong>Name:</strong> {nutritionist.name}</p>
+                  <p><strong>Email:</strong> {nutritionist.email}</p>
+                  <button
+                    style={styles.modalButton}
+                    onClick={() => setSelectedNutritionistId(nutritionist._id)}
+                  >
+                    {selectedNutritionistId === nutritionist._id ? 'Selected' : 'Select'}
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <button
+              style={styles.modalButton}
+              onClick={handleAssignNutritionist}
+            >
+              Confirm Assignment
+            </button>
+            <button
+              style={styles.cancelButton}
+              onClick={() => {
+                setIsModalOpen(false);
+                setSelectedMealPlanId(null);
+                setSelectedNutritionistId(null);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </>
   );

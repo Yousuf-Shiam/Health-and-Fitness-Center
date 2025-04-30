@@ -35,6 +35,10 @@ export const deleteBooking = (bookingId) =>
 // Meal Plan-related API calls
 export const createMealPlan = (mealPlanData) => API.post('/mealplans', mealPlanData);
 export const getMealPlans = () => API.get('/mealplans'); // Fetch meal plans for the authenticated user
+export const assignNutritionist = (mealPlanId, nutritionistData) =>
+  API.put(`/mealplans/${mealPlanId}/assign-nutritionist`, nutritionistData); // Assign a nutritionist to a meal plan
+export const updateApprovalStatus = (mealPlanId, approvalData) =>
+  API.put(`/mealplans/${mealPlanId}/approval-status`, approvalData); // Update approval status of a meal plan
 
 // Meal Tracking and Fitness Goals API calls (New)
 export const getFitnessGoals = (userId) => API.get(`/fitness-goals/${userId}`); // Fetch fitness goals for a user
@@ -48,4 +52,13 @@ export const saveMealTracker = (mealTrackerData) => API.post('/meal-tracker', me
 
 // Get meal tracker data for a user
 export const getMealTracker = (userId) => API.get(`/meal-tracker/${userId}`);
+
+// Fetch meal plans assigned to the logged-in nutritionist
+export const getAssignedMealPlans = () => API.get('/mealplans/assigned');
+
+// Update a meal plan
+export const updateMealPlan = (mealPlanId, mealPlanData) =>
+  API.put(`/mealplans/${mealPlanId}`, mealPlanData);
+
+
 export default API;

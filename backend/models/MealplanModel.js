@@ -33,9 +33,17 @@ const mealplanSchema = mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    nutritionist: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User', // Reference to the User model
+    },
+    approvalStatus: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending',
+    },
   },
   { timestamps: true }
 );
 
-// Explicitly specify the collection name as 'mealplans'
 module.exports = mongoose.model('MealPlan', mealplanSchema, 'mealplans');

@@ -1,9 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const { createMealPlan, getMealPlans } = require('../controllers/mealplanController');
+const {
+  createMealPlan,
+  getMealPlans,
+  assignNutritionist,
+  updateApprovalStatus,
+  getAssignedMealPlans,
+  updateMealPlan,
+} = require('../controllers/mealplanController');
 const { protect } = require('../middleware/authMiddleware');
+
 const { check } = require('express-validator');
 
+// @route   POST /api/mealplans
+// @desc    Create a new meal plan
+// @access  Private (Client)
 router.post(
   '/',
   protect,
@@ -19,6 +30,29 @@ router.post(
   createMealPlan
 );
 
+// @route   GET /api/mealplans
+// @desc    Get all meal plans for the authenticated user
+// @access  Private (Client)
 router.get('/', protect, getMealPlans);
 
-module.exports = router; // Ensure the router is exported
+// @route   PUT /api/mealplans/:id/assign-nutritionist
+// @desc    Assign a nutritionist to a meal plan
+// @access  Private (Client)
+router.put('/:id/assign-nutritionist', protect, assignNutritionist);
+
+// @route   PUT /api/mealplans/:id/approval-status
+// @desc    Update approval status of a meal plan
+// @access  Private (Nutritionist)
+router.put('/:id/approval-status', protect, updateApprovalStatus);
+
+// @route   GET /api/mealplans/assigned
+// @desc    Get all meal plans assigned to the logged-in nutritionist
+// @access  Private (Nutritionist)
+router.get('/assigned', protect, getAssignedMealPlans);
+
+// @route   PUT /api/mealplans/:id
+// @desc    Update a meal plan
+// @access  Private (Nutritionist)
+router.put('/:id', protect, updateMealPlan);
+
+module.exports = router;
