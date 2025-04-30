@@ -4,11 +4,12 @@ const {
   saveMealTracker,
   getMealTracker,
 } = require('../controllers/mealTrackerController');
+const { protect } = require('../middleware/authMiddleware');
 
 // Save meal tracker data
-router.post('/', saveMealTracker);
+router.post('/', protect, saveMealTracker);
 
 // Get meal tracker data for a user
-router.get('/:userId', getMealTracker);
+router.get('/:userId', protect, getMealTracker);
 
 module.exports = router;
