@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 import { saveMealTracker, getMealTracker } from '../../services/api';
-import ClientNavBar from './ClientNavBar'; // Import ClientNavBar
+import ClientNavBar from './ClientNavBar'; // Import the ClientNavBar component
 
 function MealTrackingAndGoals() {
   const defaultMealTracker = {
@@ -15,30 +16,26 @@ function MealTrackingAndGoals() {
 
   const [mealTracker, setMealTracker] = useState(defaultMealTracker);
   const [loading, setLoading] = useState(false);
-  const [clientName, setClientName] = useState(''); // Store client name
-
-  // Array of days in a week
-  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const navigate = useNavigate(); // Initialize useNavigate for redirection
 
   // Fetch meal tracker data when the component loads
   useEffect(() => {
     const fetchMealTracker = async () => {
       try {
-        const token = localStorage.getItem('token'); // Retrieve JWT token from localStorage
-        if (!token) {
-          alert('Token is missing. Please log in again.');
-          console.error('Error: Token is missing from localStorage.');
-          return;
-        }
-
+        const userId = localStorage.getItem('userId'); // Retrieve userId from localStorage
         setLoading(true);
-        const response = await getMealTracker(); // No need to pass userId, backend handles it
-        if (response.data.mealTracker) {
-          setMealTracker((prev) => ({
-            ...defaultMealTracker, // Ensure all days are present
-            ...response.data.mealTracker,
-          }));
-        }
+        const response = await getMealTracker(userId);
+        // Ensure only the days of the week are set in the state
+        const filteredMealTracker = {
+          Monday: response.data.mealTracker.Monday || { breakfast: '', lunch: '', dinner: '', snacks: '' },
+          Tuesday: response.data.mealTracker.Tuesday || { breakfast: '', lunch: '', dinner: '', snacks: '' },
+          Wednesday: response.data.mealTracker.Wednesday || { breakfast: '', lunch: '', dinner: '', snacks: '' },
+          Thursday: response.data.mealTracker.Thursday || { breakfast: '', lunch: '', dinner: '', snacks: '' },
+          Friday: response.data.mealTracker.Friday || { breakfast: '', lunch: '', dinner: '', snacks: '' },
+          Saturday: response.data.mealTracker.Saturday || { breakfast: '', lunch: '', dinner: '', snacks: '' },
+          Sunday: response.data.mealTracker.Sunday || { breakfast: '', lunch: '', dinner: '', snacks: '' },
+        };
+        setMealTracker(filteredMealTracker);
       } catch (error) {
         console.error('Error fetching meal tracker:', error);
       } finally {
@@ -71,9 +68,18 @@ function MealTrackingAndGoals() {
     }
 
     try {
+      const token = localStorage.getItem('token'); // Retrieve token from localStorage
+      if (!token) {
+        alert('User is not logged in. Please log in again.');
+        return;
+      }
+
       console.log('Saving meal tracker:', { mealTracker }); // Debugging log
-      await saveMealTracker({ mealTracker });
+      await saveMealTracker({ mealTracker }); // Send only the mealTracker data
       alert('Meal Tracker saved successfully!');
+
+      // Redirect to ClientHomePage after saving
+      navigate('/client-home');
     } catch (error) {
       console.error('Error saving meal tracker:', error.response || error.message);
       alert('Failed to save meal tracker. Please try again.');
@@ -82,19 +88,17 @@ function MealTrackingAndGoals() {
 
   return (
     <>
-      <ClientNavBar /> {/* Add ClientNavBar */}
+      {/* Include the ClientNavBar */}
+      <ClientNavBar />
+
+      {/* Main Content */}
       <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
-        <h1 style={{ textAlign: 'center', color: '#0f5132' }}>
-          Welcome, {clientName}!
-        </h1>
-        <h2 style={{ textAlign: 'center', color: '#0f5132', marginTop: '1rem' }}>
-          Weekly Meal Tracker
-        </h2>
+        <h1 style={{ textAlign: 'center', color: '#0f5132' }}>Weekly Meal Tracker</h1>
 
         {loading ? (
           <p style={{ textAlign: 'center', color: '#0d6efd' }}>Loading...</p>
         ) : (
-          <>
+          <div>
             <table
               style={{
                 width: '100%',
@@ -113,7 +117,7 @@ function MealTrackingAndGoals() {
                 </tr>
               </thead>
               <tbody>
-                {daysOfWeek.map((day) => (
+                {Object.keys(mealTracker).map((day) => (
                   <tr key={day}>
                     <td style={styles.dayCell}>{day}</td>
                     {['breakfast', 'lunch', 'dinner', 'snacks'].map((mealType) => (
@@ -149,7 +153,7 @@ function MealTrackingAndGoals() {
             >
               Save Meal Tracker
             </button>
-          </>
+          </div>
         )}
       </div>
     </>

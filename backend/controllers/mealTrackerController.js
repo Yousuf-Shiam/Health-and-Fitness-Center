@@ -1,22 +1,29 @@
 const MealTracker = require('../models/MealTrackerModel');
 
 // Save meal tracker data
-exports.saveMealTracker = async (req, res) => {
-  const { mealTracker } = req.body;
-
+const saveMealTracker = async (req, res) => {
   try {
-    let tracker = await MealTracker.findOne({ userId: req.user._id });
+    const { mealTracker } = req.body;
 
-    if (tracker) {
-      // Update existing meal tracker
-      tracker.mealTracker = mealTracker;
-      await tracker.save();
-    } else {
-      // Create a new meal tracker
-      tracker = await MealTracker.create({ userId: req.user._id, mealTracker });
+    if (!req.user || !req.user._id) {
+      return res.status(400).json({ message: 'User ID is required.' });
     }
 
-    res.status(200).json({ message: 'Meal tracker saved successfully', tracker });
+    const userId = req.user._id;
+
+    // Check if a meal tracker already exists for the user
+    const existingTracker = await MealTracker.findOne({ userId });
+    if (existingTracker) {
+      // Update the existing tracker
+      existingTracker.mealTracker = mealTracker;
+      await existingTracker.save();
+      return res.status(200).json({ message: 'Meal tracker updated successfully' });
+    }
+
+    // Create a new meal tracker
+    const newMealTracker = new MealTracker({ userId, mealTracker });
+    await newMealTracker.save();
+    res.status(201).json({ message: 'Meal tracker saved successfully' });
   } catch (error) {
     console.error('Error saving meal tracker:', error);
     res.status(500).json({ message: 'Error saving meal tracker', error: error.message });
@@ -26,13 +33,15 @@ exports.saveMealTracker = async (req, res) => {
 // Get meal tracker data for the logged-in user
 exports.getMealTracker = async (req, res) => {
   try {
-    const tracker = await MealTracker.findOne({ userId: req.user._id });
+    const userId = req.params.userId;
+    const mealTracker = await MealTracker.findOne({ userId });
 
-    if (!tracker) {
+    if (!mealTracker) {
       return res.status(404).json({ message: 'Meal tracker not found' });
     }
 
-    res.status(200).json({ mealTracker: tracker.mealTracker });
+    // Only return the mealTracker field
+    res.status(200).json(mealTracker.mealTracker);
   } catch (error) {
     console.error('Error fetching meal tracker:', error);
     res.status(500).json({ message: 'Error fetching meal tracker', error: error.message });

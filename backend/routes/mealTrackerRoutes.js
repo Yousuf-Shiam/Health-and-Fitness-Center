@@ -1,16 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { saveMealTracker, getMealTracker } = require('../controllers/mealTrackerController');
+const {
+  saveMealTracker,
+  getMealTracker,
+} = require('../controllers/mealTrackerController');
 const { protect } = require('../middleware/authMiddleware');
 
-// @route   POST /api/mealtracker
-// @desc    Save meal tracker data
-// @access  Private
+// Save meal tracker data
 router.post('/', protect, saveMealTracker);
 
-// @route   GET /api/mealtracker
-// @desc    Get meal tracker data for the logged-in user
-// @access  Private
-router.get('/', protect, getMealTracker);
+// Get meal tracker data for a user
+router.get('/:userId', protect, getMealTracker);
 
 module.exports = router;
