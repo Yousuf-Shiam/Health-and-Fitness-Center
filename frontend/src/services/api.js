@@ -47,11 +47,6 @@ export const updateFitnessGoal = (userId, goalData) =>
 export const trackMeal = (mealData) => API.post('/meal-tracking', mealData); // Track a meal
 export const getMealTracking = (userId) => API.get(`/meal-tracking/${userId}`); // Fetch meal tracking data for a user
 
-// Save meal tracker data
-export const saveMealTracker = (mealTrackerData) => API.post('/meal-tracker', mealTrackerData);
-
-// Get meal tracker data for a user
-export const getMealTracker = (userId) => API.get(`/meal-tracker/${userId}`);
 
 // Fetch meal plans assigned to the logged-in nutritionist
 export const getAssignedMealPlans = () => API.get('/mealplans/assigned');
@@ -60,5 +55,13 @@ export const getAssignedMealPlans = () => API.get('/mealplans/assigned');
 export const updateMealPlan = (mealPlanId, mealPlanData) =>
   API.put(`/mealplans/${mealPlanId}`, mealPlanData);
 
+export const updateRecommendations = (mealPlanId, recommendationsData) =>
+  API.put(`/mealplans/${mealPlanId}/recommendations`, recommendationsData);
+
+// Save meal tracker data
+export const saveMealTracker = (data) => API.post('/mealtracker', data);
+
+// Get meal tracker data for a user
+export const getMealTracker = (userId) => API.get(`/mealtracker/${userId}`);
 
 export default API;

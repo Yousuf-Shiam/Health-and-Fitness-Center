@@ -123,3 +123,26 @@ exports.updateMealPlan = async (req, res) => {
     res.status(500).json({ message: 'Error updating meal plan', error });
   }
 };
+
+
+// @desc    Update recommendations for a meal plan
+// @route   PUT /api/mealplans/:id/recommendations
+// @access  Private (Nutritionist)
+exports.updateRecommendations = async (req, res) => {
+  const { recommendations } = req.body;
+
+  try {
+    const mealPlan = await MealPlan.findById(req.params.id);
+    if (!mealPlan) {
+      return res.status(404).json({ message: 'Meal plan not found' });
+    }
+
+    mealPlan.recommendations = recommendations;
+    await mealPlan.save();
+
+    res.status(200).json({ message: 'Recommendations updated successfully', mealPlan });
+  } catch (error) {
+    console.error('Error updating recommendations:', error);
+    res.status(500).json({ message: 'Error updating recommendations', error });
+  }
+};

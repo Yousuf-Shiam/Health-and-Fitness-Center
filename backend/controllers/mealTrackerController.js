@@ -1,53 +1,40 @@
 const MealTracker = require('../models/MealTrackerModel');
 
 // Save meal tracker data
-const saveMealTracker = async (req, res) => {
+exports.saveMealTracker = async (req, res) => {
+  const { mealTracker } = req.body;
+
   try {
-    const { userId, mealTracker } = req.body;
+    let tracker = await MealTracker.findOne({ userId: req.user._id });
 
-    // Validate input
-    if (!userId || !mealTracker) {
-      return res.status(400).json({ message: 'User ID and meal tracker data are required.' });
+    if (tracker) {
+      // Update existing meal tracker
+      tracker.mealTracker = mealTracker;
+      await tracker.save();
+    } else {
+      // Create a new meal tracker
+      tracker = await MealTracker.create({ userId: req.user._id, mealTracker });
     }
 
-    // Check if a meal tracker already exists for the user
-    const existingTracker = await MealTracker.findOne({ userId });
-    if (existingTracker) {
-      // Update the existing tracker
-      existingTracker.mealTracker = mealTracker;
-      await existingTracker.save();
-      return res.status(200).json({ message: 'Meal tracker updated successfully' });
-    }
-
-    // Create a new meal tracker
-    const newMealTracker = new MealTracker({ userId, mealTracker });
-    await newMealTracker.save();
-    res.status(201).json({ message: 'Meal tracker saved successfully' });
+    res.status(200).json({ message: 'Meal tracker saved successfully', tracker });
   } catch (error) {
     console.error('Error saving meal tracker:', error);
-    res.status(500).json({ message: 'Failed to save meal tracker', error: error.message });
+    res.status(500).json({ message: 'Error saving meal tracker', error: error.message });
   }
 };
 
-// Get meal tracker data for a user
-const getMealTracker = async (req, res) => {
+// Get meal tracker data for the logged-in user
+exports.getMealTracker = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const tracker = await MealTracker.findOne({ userId: req.user._id });
 
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required.' });
-    }
-
-    const mealTracker = await MealTracker.findOne({ userId });
-    if (!mealTracker) {
+    if (!tracker) {
       return res.status(404).json({ message: 'Meal tracker not found' });
     }
 
-    res.status(200).json({ mealTracker });
+    res.status(200).json({ mealTracker: tracker.mealTracker });
   } catch (error) {
     console.error('Error fetching meal tracker:', error);
-    res.status(500).json({ message: 'Failed to fetch meal tracker', error: error.message });
+    res.status(500).json({ message: 'Error fetching meal tracker', error: error.message });
   }
 };
-
-module.exports = { saveMealTracker, getMealTracker };

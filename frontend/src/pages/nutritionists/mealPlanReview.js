@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import NutritionistNavBar from './NutritionistNavBar';
 import Footer from '../../components/Footer';
-import { getAssignedMealPlans, updateMealPlan, updateApprovalStatus } from '../../services/api';
+import { getAssignedMealPlans, updateMealPlan, updateApprovalStatus, updateRecommendations } from '../../services/api';
 
 function MealPlanReview() {
   const [mealPlans, setMealPlans] = useState([]);
@@ -224,6 +224,26 @@ function MealPlanReview() {
     }
   };
 
+  const handleSaveRecommendations = async () => {
+    try {
+      const recommendations = updatedMealPlan.recommendations || '';
+      // Call the API to update recommendations
+      await updateRecommendations(selectedMealPlan._id, { recommendations });
+  
+      alert('Recommendations saved successfully!');
+      
+      // Refresh the meal plans to reflect the updated recommendations
+      const response = await getAssignedMealPlans();
+      setMealPlans(response.data);
+  
+      // Clear the selected and updated meal plan
+      setSelectedMealPlan(null);
+      setUpdatedMealPlan(null);
+    } catch (error) {
+      console.error('Error saving recommendations:', error);
+      alert('Failed to save recommendations. Please try again.');
+    }
+  };
   const handleViewClientDetails = (client) => {
     setSelectedClient(client);
     setIsClientModalOpen(true);
@@ -293,6 +313,22 @@ function MealPlanReview() {
                   ))}
                   <button style={{...styles.modalButtonAdd, marginLeft : "45%", marginBottom : "3%"}} onClick={handleAddMeal}>
                     Add Meal
+                  </button>
+                </div>
+
+                <div style={styles.modalSection}>
+                  <h3 style={{ textAlign: 'center', marginTop: '7%', backgroundColor: 'rgb(216, 255, 215)' }}>Recommendations</h3>
+                  <textarea
+                    value={updatedMealPlan.recommendations || ''}
+                    onChange={(e) => setUpdatedMealPlan({ ...updatedMealPlan, recommendations: e.target.value })}
+                    style={styles.textarea}
+                    placeholder="Write your recommendations here..."
+                  />
+                  <button
+                    style={styles.modalButton}
+                    onClick={handleSaveRecommendations}
+                  >
+                    Save Recommendations
                   </button>
                 </div>
 

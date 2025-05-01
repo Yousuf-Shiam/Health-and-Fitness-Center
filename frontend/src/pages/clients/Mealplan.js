@@ -224,6 +224,7 @@ function Mealplan() {
                   <p><strong>Description:</strong> {plan.description}</p>
                   <p><strong>Fitness Goal:</strong> {plan.fitnessGoal}</p>
                   <p><strong>Preferences:</strong> {plan.preferences || 'None'}</p>
+                  <p><strong>Recommendations:</strong> {plan.recommendations}</p>
                   <p><strong>Meals:</strong></p>
                   <ul>
                     {plan.mealPlan.map((meal, mealIndex) => (

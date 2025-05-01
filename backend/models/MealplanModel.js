@@ -42,6 +42,10 @@ const mealplanSchema = mongoose.Schema(
       enum: ['pending', 'approved', 'rejected'],
       default: 'pending',
     },
+    recommendations: {
+      type: String, // Field to store recommendations from the nutritionist
+      default: 'No recommendations given yet',
+    },
   },
   { timestamps: true }
 );

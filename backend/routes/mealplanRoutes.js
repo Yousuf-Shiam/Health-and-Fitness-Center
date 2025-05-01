@@ -7,9 +7,9 @@ const {
   updateApprovalStatus,
   getAssignedMealPlans,
   updateMealPlan,
+  updateRecommendations, // Import the new controller function
 } = require('../controllers/mealplanController');
 const { protect } = require('../middleware/authMiddleware');
-
 const { check } = require('express-validator');
 
 // @route   POST /api/mealplans
@@ -54,5 +54,10 @@ router.get('/assigned', protect, getAssignedMealPlans);
 // @desc    Update a meal plan
 // @access  Private (Nutritionist)
 router.put('/:id', protect, updateMealPlan);
+
+// @route   PUT /api/mealplans/:id/recommendations
+// @desc    Update recommendations for a meal plan
+// @access  Private (Nutritionist)
+router.put('/:id/recommendations', protect, updateRecommendations);
 
 module.exports = router;

@@ -1,8 +1,12 @@
 const mongoose = require('mongoose');
 
-const mealTrackerSchema = new mongoose.Schema(
+const mealTrackerSchema = mongoose.Schema(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     mealTracker: {
       Monday: {
         breakfast: { type: String, default: '' },
@@ -51,4 +55,4 @@ const mealTrackerSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('MealTracker', mealTrackerSchema, 'mealtrackers');
+module.exports = mongoose.model('MealTracker', mealTrackerSchema);
