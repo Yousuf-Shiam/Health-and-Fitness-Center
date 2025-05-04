@@ -5,6 +5,7 @@ const connectDB = require('./config/db'); // Correct import
 const cors = require('cors');
 const paymentRoutes = require('./routes/PaymentRoutes')
 const mealplanRoutes = require('./routes/mealplanRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use('/api/programs', require('./routes/programRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
 app.use('/api/payments', paymentRoutes);
 app.use('/api/mealplans', mealplanRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 
 const PORT = process.env.PORT || 5000;

@@ -47,7 +47,6 @@ export const updateFitnessGoal = (userId, goalData) =>
 export const trackMeal = (mealData) => API.post('/meal-tracking', mealData); // Track a meal
 export const getMealTracking = (userId) => API.get(`/meal-tracking/${userId}`); // Fetch meal tracking data for a user
 
-
 // Fetch meal plans assigned to the logged-in nutritionist
 export const getAssignedMealPlans = () => API.get('/mealplans/assigned');
 
@@ -57,4 +56,19 @@ export const updateMealPlan = (mealPlanId, mealPlanData) =>
 
 export const updateRecommendations = (mealPlanId, recommendationsData) =>
   API.put(`/mealplans/${mealPlanId}/recommendations`, recommendationsData);
+
+// Notification-related API calls
+// Fetch all notifications for the logged-in user
+export const getNotifications = async () => {
+  const response = await API.get('/notifications');
+  return response.data;
+};
+
+// Mark a notification as read
+export const markNotificationAsRead = async (notificationId) => {
+  const response = await API.put(`/notifications/${notificationId}/read`);
+  return response.data;
+};
+
+export default API;
 

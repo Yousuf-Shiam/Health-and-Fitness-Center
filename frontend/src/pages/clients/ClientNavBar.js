@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
 import { Link } from 'react-router-dom';
+import { getNotifications, markNotificationAsRead } from '../../services/api';
 
 function ClientNavBar() {
   const [clientName, setClientName] = useState(''); // State to hold client name
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,7 +42,19 @@ function ClientNavBar() {
       }
     };
 
+    const fetchNotifications = async () => {
+      try {
+        const data = await getNotifications();
+        setNotifications(data);
+        const unread = data.filter((notification) => !notification.isRead).length;
+        setUnreadCount(unread);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
     fetchClientName();
+    fetchNotifications();
   }, []);
 
   const handleLogout = () => {
@@ -48,6 +64,20 @@ function ClientNavBar() {
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
+  };
+
+  const handleMarkAsRead = async (notificationId) => {
+    try {
+      await markNotificationAsRead(notificationId);
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification._id === notificationId ? { ...notification, isRead: true } : notification
+        )
+      );
+      setUnreadCount((prev) => prev - 1);
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
   };
 
   const firstLetter = clientName.charAt(0).toUpperCase();
@@ -126,6 +156,56 @@ function ClientNavBar() {
       cursor: 'pointer',
       fontWeight: 'bold',
     },
+    notificationIcon: {
+      color: '#ffffff',
+      textDecoration: 'none',
+      fontSize: '1rem',
+    },
+    notificationContainer: {
+      position: 'relative',
+    },
+    bellIcon: {
+      cursor: 'pointer',
+      position: 'relative',
+    },
+    unreadBadge: {
+      position: 'absolute',
+      top: '-5px',
+      right: '-10px',
+      backgroundColor: 'red',
+      color: 'white',
+      borderRadius: '50%',
+      padding: '0.2rem 0.5rem',
+      fontSize: '0.8rem',
+      fontWeight: 'bold',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minWidth: '20px', // Ensure the badge is circular even for single-digit numbers
+      height: '20px',
+    },
+    dropdown: {
+      position: 'absolute',
+      top: '2rem',
+      right: '0',
+      backgroundColor: '#ffffff',
+      color: '#000000',
+      border: '1px solid #ccc',
+      borderRadius: '8px',
+      width: '300px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      zIndex: 1000,
+      padding: '1rem',
+    },
+    notification: {
+      marginBottom: '1rem',
+      padding: '0.5rem',
+      borderBottom: '1px solid #ccc',
+    },
+    rightContainer: {
+      display: 'flex',
+      alignItems: 'center',
+    },
   };
 
   return (
@@ -142,12 +222,43 @@ function ClientNavBar() {
             Health & Fitness
           </Link>
         </div>
-        <div
-          style={styles.avatar}
-          onClick={toggleSidebar}
-          title="Open Sidebar"
-        >
-          {firstLetter}
+        <div style={styles.rightContainer}>
+          <div style={styles.notificationContainer}>
+            <div style={styles.bellIcon} onClick={() => setShowDropdown(!showDropdown)}>
+              🔔
+              {unreadCount > 0 && (
+                <span style={styles.unreadBadge}>
+                  {unreadCount > 99 ? '99+' : unreadCount} {/* Show "99+" if count exceeds 99 */}
+                </span>
+              )}
+            </div>
+            {showDropdown && (
+              <div style={styles.dropdown}>
+                <h3>User Notifications</h3>
+                {notifications.length === 0 ? (
+                  <p>No notifications available.</p>
+                ) : (
+                  notifications.map((notification) => (
+                    <div key={notification._id} style={styles.notification}>
+                      <h4>{notification.title}</h4>
+                      <p>{notification.message}</p>
+                      <small>{new Date(notification.createdAt).toLocaleString()}</small>
+                      {!notification.isRead && (
+                        <button onClick={() => handleMarkAsRead(notification._id)}>Mark as Read</button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+          <div
+            style={styles.avatar}
+            onClick={toggleSidebar}
+            title="Open Sidebar"
+          >
+            {firstLetter}
+          </div>
         </div>
       </div>
 

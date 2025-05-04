@@ -20,6 +20,7 @@ import CreateMealPlan from './pages/clients/createmealplan';
 import Mealplan from './pages/clients/Mealplan';
 
 import MealPlanReview from './pages/nutritionists/mealPlanReview'; // Import the MealPlanReview component
+import Notifications from './pages/clients/Notifications';
 
 function App() {
   return (
@@ -127,6 +128,14 @@ function App() {
           element={
             <ProtectedRoute>
               <MealPlanReview />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <Notifications />
             </ProtectedRoute>
           }
         />
