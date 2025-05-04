@@ -18,7 +18,7 @@ import Payment from './pages/clients/Payment';
 import DemoPayment from './pages/clients/DemoPayment'; // Import the demo payment page
 import CreateMealPlan from './pages/clients/createmealplan';
 import Mealplan from './pages/clients/Mealplan';
-import MealTrackingAndGoals from './pages/clients/MealTrackingAndGoals'; // Import the new page
+
 import MealPlanReview from './pages/nutritionists/mealPlanReview'; // Import the MealPlanReview component
 
 function App() {
@@ -120,14 +120,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/meal-tracking"
-          element={
-            <ProtectedRoute>
-              <MealTrackingAndGoals />
-            </ProtectedRoute>
-          }
-        />
+       
 
         <Route
           path="/nutritionist-mealplan-review"
