@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
 import { Link } from 'react-router-dom';
 
-
 function ClientNavBar() {
   const [clientName, setClientName] = useState(''); // State to hold client name
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -62,20 +61,20 @@ function ClientNavBar() {
       background: 'linear-gradient(90deg, #0f5132, #0d3a7d)', // Match Navbar.js color scheme
       color: '#ffffff',
       boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)', // Slight shadow for depth
-        position: 'sticky',
-        top: 0,
-        margin: '0',
+      position: 'sticky',
+      top: 0,
+      margin: '0',
     },
     logo: {
-        fontSize: '1.8rem',
-        fontWeight: 'bold',
-        color: '#ffffff', // White text for the logo
-        textDecoration: 'none',
-        transition: 'color 0.3s ease',
-      },
-      logoHover: {
-        color: '#ffcc00', // Bright yellow on hover
-      },
+      fontSize: '1.8rem',
+      fontWeight: 'bold',
+      color: '#ffffff', // White text for the logo
+      textDecoration: 'none',
+      transition: 'color 0.3s ease',
+    },
+    logoHover: {
+      color: '#ffcc00', // Bright yellow on hover
+    },
     avatar: {
       width: '40px',
       height: '40px',
@@ -133,7 +132,7 @@ function ClientNavBar() {
     <>
       {/* Navbar */}
       <div style={styles.navbar}>
-      <div>
+        <div>
           <Link
             to="/client-home"
             style={styles.logo}
@@ -185,16 +184,6 @@ function ClientNavBar() {
         >
           Meal Plans
         </button>
-
-          <button
-          style={styles.button}
-          onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
-          onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
-          onClick={() => navigate('/meal-tracking')}
-        >
-          Meal Tracking & Goals
-        </button>
-...
         <button
           style={styles.button}
           onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}

@@ -58,10 +58,3 @@ export const updateMealPlan = (mealPlanId, mealPlanData) =>
 export const updateRecommendations = (mealPlanId, recommendationsData) =>
   API.put(`/mealplans/${mealPlanId}/recommendations`, recommendationsData);
 
-// Save meal tracker data
-export const saveMealTracker = (data) => API.post('/mealtracker', data);
-
-// Get meal tracker data for a user
-export const getMealTracker = (userId) => API.get(`/mealtracker/${userId}`);
-
-export default API;
