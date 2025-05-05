@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {jwtDecode} from 'jwt-decode'; // Correct import for jwt-decode
 import TrainerNavBar from './TrainerNavBar'; // Import the TrainerNavBar component
 import Footer from '../../components/Footer';
+import { set } from 'mongoose';
 
 function TrainerHomePage() {
   const [trainerName, setTrainerName] = useState(''); // State to store the trainer's name
@@ -41,6 +42,7 @@ function TrainerHomePage() {
         );
         console.log('Filtered Programs:', filteredPrograms); // Debugging: Log filtered programs
 
+        setTrainerName(filteredPrograms[0]?.creator.name || ''); // Set trainer's name from the first program's creator
         // Fetch bookings for the filtered programs
         const bookingsResponse = await fetch('http://localhost:5000/api/bookings', {
           headers: {

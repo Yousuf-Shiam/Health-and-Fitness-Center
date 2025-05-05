@@ -13,17 +13,25 @@ function ClientHomePage() {
   const [searchQuery, setSearchQuery] = useState(''); // State for search query
   const [startDate, setStartDate] = useState(''); // State for start date
 
+  // Add state for collapsible sections and search queries
+  const [collapsedSections, setCollapsedSections] = useState({
+    trainers: false,
+    nutritionists: false,
+    programs: false,
+  }); // State to manage collapsible sections
+  const [searchTrainer, setSearchTrainer] = useState(''); // State for trainer search query
+  const [searchNutritionist, setSearchNutritionist] = useState(''); // State for nutritionist search query
+
   const styles = {
     container: {
       display: 'flex',
       flexDirection: 'column',
       minHeight: '100vh',
-      background: 'linear-gradient(90deg, #e6e6fa, #add8e6)',
-      color: '#333333',
+      background: 'linear-gradient(135deg, #f0f8ff, #e6e6fa)',
+      color: '#333',
       margin: 0,
       padding: 0,
       overflowY: 'auto',
-      overflowX: 'hidden',
     },
     content: {
       flex: 1,
@@ -33,46 +41,85 @@ function ClientHomePage() {
       justifyContent: 'center',
       textAlign: 'center',
       width: '100%',
+      padding: '2rem',
     },
     heading: {
       fontSize: '2.8rem',
       fontWeight: 'bold',
-      color: 'rgb(10, 53, 99)',
+      color: '#0a3563',
       marginBottom: '1rem',
     },
     subheading: {
       fontSize: '1.4rem',
-      color: '#555555',
+      color: '#555',
       marginBottom: '2rem',
     },
     section: {
       margin: '2rem 0',
-      padding: '1rem',
-      backgroundColor: '#ffffff',
-      borderRadius: '8px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      padding: '1.5rem',
+      backgroundColor: '#fff',
+      borderRadius: '12px',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
       width: '90%',
       maxWidth: '800px',
+      transition: 'all 0.3s ease-in-out',
     },
     sectionHeading: {
       fontSize: '1.8rem',
       fontWeight: 'bold',
       marginBottom: '1rem',
       color: '#333',
+      cursor: 'pointer',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
     item: {
       marginBottom: '1rem',
       padding: '1rem',
       border: '1px solid #ccc',
-      borderRadius: '4px',
+      borderRadius: '8px',
       textAlign: 'left',
+      backgroundColor: '#f9f9f9',
+      transition: 'all 0.3s ease',
+    },
+    itemHover: {
+      backgroundColor: '#f0f8ff',
     },
     searchBar: {
       marginBottom: '1rem',
       padding: '0.8rem',
-      width: '70%',
+      width: '100%',
+      maxWidth: '600px',
       border: '1px solid #ccc',
-      borderRadius: '4px',
+      borderRadius: '8px',
+      outline: 'none',
+      transition: 'all 0.3s ease',
+    },
+    searchBarFocus: {
+      borderColor: '#0a3563',
+      boxShadow: '0 0 8px rgba(10, 53, 99, 0.2)',
+    },
+    datePicker: {
+      marginLeft: '1rem',
+      padding: '0.5rem',
+      border: '1px solid #ccc',
+      borderRadius: '8px',
+      outline: 'none',
+      transition: 'all 0.3s ease',
+    },
+    button: {
+      marginTop: '1rem',
+      padding: '0.8rem 1.5rem',
+      backgroundColor: '#0a3563',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease',
+    },
+    buttonHover: {
+      backgroundColor: '#084080',
     },
   };
 
@@ -216,6 +263,14 @@ function ClientHomePage() {
     }
   };
 
+  // Function to toggle collapsible sections
+  const toggleSection = (section) => {
+    setCollapsedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
   return (
     <>
       <div style={styles.container}>
@@ -226,84 +281,143 @@ function ClientHomePage() {
             Manage your fitness activities, track progress, and achieve your goals.
           </p>
 
-          {/* Trainers Section */}
+          {/* Trainers Section with Search and Collapsible Functionality */}
           <div style={styles.section}>
-            <h2 style={styles.sectionHeading}>Available Trainers</h2>
-            {trainers.map((trainer) => (
-              <div key={trainer.id} style={styles.item}>
-                <h3>{trainer.name}</h3>
-                <p>Specialization: {trainer.specialization}</p>
-                <p>Experience: {trainer.experience} years</p>
-              </div>
-            ))}
+            <h2
+              style={styles.sectionHeading}
+              onClick={() => toggleSection('trainers')}
+            >
+              Available Trainers{' '}
+              <span>
+                {collapsedSections.trainers ? '▶' : '▼'}
+              </span>
+            </h2>
+            {!collapsedSections.trainers && (
+              <>
+                <input
+                  type="text"
+                  placeholder="Search trainers..."
+                  value={searchTrainer}
+                  onChange={(e) => setSearchTrainer(e.target.value)}
+                  style={styles.searchBar}
+                />
+                {trainers
+                  .filter((trainer) =>
+                    trainer.name.toLowerCase().includes(searchTrainer.toLowerCase())
+                  )
+                  .map((trainer) => (
+                    <div key={trainer.id} style={styles.item}>
+                      <h3>{trainer.name}</h3>
+                      <p>Specialization: {trainer.specialization}</p>
+                      <p>Experience: {trainer.experience} years</p>
+                    </div>
+                  ))}
+              </>
+            )}
           </div>
 
-          {/* Nutritionists Section */}
+          {/* Nutritionists Section with Search and Collapsible Functionality */}
           <div style={styles.section}>
-            <h2 style={styles.sectionHeading}>Available Nutritionists</h2>
-            {nutritionists.map((nutritionist) => (
-              <div key={nutritionist.id} style={styles.item}>
-                <h3>{nutritionist.name}</h3>
-                <p>Specialization: {nutritionist.specialization}</p>
-                <p>Experience: {nutritionist.experience} years</p>
-              </div>
-            ))}
+            <h2
+              style={styles.sectionHeading}
+              onClick={() => toggleSection('nutritionists')}
+            >
+              Available Nutritionists{' '}
+              <span>
+                {collapsedSections.nutritionists ? '▶' : '▼'}
+              </span>
+            </h2>
+            {!collapsedSections.nutritionists && (
+              <>
+                <input
+                  type="text"
+                  placeholder="Search nutritionists..."
+                  value={searchNutritionist}
+                  onChange={(e) => setSearchNutritionist(e.target.value)}
+                  style={styles.searchBar}
+                />
+                {nutritionists
+                  .filter((nutritionist) =>
+                    nutritionist.name
+                      .toLowerCase()
+                      .includes(searchNutritionist.toLowerCase())
+                  )
+                  .map((nutritionist) => (
+                    <div key={nutritionist.id} style={styles.item}>
+                      <h3>{nutritionist.name}</h3>
+                      <p>Specialization: {nutritionist.specialization}</p>
+                      <p>Experience: {nutritionist.experience} years</p>
+                    </div>
+                  ))}
+              </>
+            )}
           </div>
 
-          {/* Fitness Programs Section */}
+          {/* Fitness Programs Section with Collapsible Functionality */}
           <div style={styles.section}>
-            <h2 style={styles.sectionHeading}>Available Fitness Programs</h2>
+            <h2
+              style={styles.sectionHeading}
+              onClick={() => toggleSection('programs')}
+            >
+              Available Fitness Programs{' '}
+              <span>
+                {collapsedSections.programs ? '▶' : '▼'}
+              </span>
+            </h2>
+            {!collapsedSections.programs && (
+              <>
+                {/* Search Bar */}
+                <input
+                  type="text"
+                  placeholder="Search programs..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={styles.searchBar}
+                />
 
-            {/* Search Bar */}
-            <input
-              type="text"
-              placeholder="Search programs..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={styles.searchBar}
-            />
+                {/* Display Filtered Programs */}
+                {fitnessPrograms
+                  .filter((program) =>
+                    program.name.toLowerCase().includes(searchQuery.toLowerCase())
+                  )
+                  .map((program) => (
+                    <div key={program._id} style={styles.item}>
+                      <h3>{program.name}</h3>
 
-            {/* Display Filtered Programs */}
-            {fitnessPrograms
-              .filter((program) =>
-                program.name.toLowerCase().includes(searchQuery.toLowerCase())
-              )
-              .map((program) => (
-                <div key={program._id} style={styles.item}>
-                  <h3>{program.name}</h3>
+                      <p>
+                        {program.creator.role === 'trainer' ? (
+                          <>
+                            <p>Trainer: {program.creator.name}</p>
+                          </>
+                        ) : program.creator.role === 'nutritionist' ? (
+                          <p>Nutritionist: {program.creator.name}</p>
+                        ) : null}
+                      </p>
 
-                  <p>
-                  {program.creator.role === "trainer" ? (
-                    <>
-                    <p>Trainer: {program.creator.name}</p>
-                    </>
-                  ) : program.creator.role === "nutritionist" ? (
-                    
-                    <p>Nutritionist: {program.creator.name}</p>
-                  ) : null}
-                  </p>
-
-                  <p>Description: {program.description}</p>
-                  <p>Duration: {program.duration} weeks</p>
-                  <p>Price: ${program.price}</p>
-                  <p> Select Starting Date: {}
-                  <input
-                    type="date"
-                    value={startDate[program._id] || ''} // Use the start date for this program
-                    onChange={(e) =>
-                      handleStartDateChange(program._id, e.target.value)
-                    }
-                    style={styles.datePicker}
-                  />
-                  <button
-                    onClick={() => handleBookProgram(program._id)}
-                    disabled={!startDate[program._id]} // Disable button if no date is selected
-                  >
-                    Book Now
-                  </button>
-                  </p>
-                </div>
-              ))}
+                      <p>Description: {program.description}</p>
+                      <p>Duration: {program.duration} weeks</p>
+                      <p>Price: ${program.price}</p>
+                      <p>
+                        Select Starting Date:{' '}
+                        <input
+                          type="date"
+                          value={startDate[program._id] || ''} // Use the start date for this program
+                          onChange={(e) =>
+                            handleStartDateChange(program._id, e.target.value)
+                          }
+                          style={styles.datePicker}
+                        />
+                        <button
+                          onClick={() => handleBookProgram(program._id)}
+                          disabled={!startDate[program._id]} // Disable button if no date is selected
+                        >
+                          Book Now
+                        </button>
+                      </p>
+                    </div>
+                  ))}
+              </>
+            )}
           </div>
         </div>
       </div>

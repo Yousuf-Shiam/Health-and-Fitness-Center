@@ -1,6 +1,7 @@
 const express = require('express');
 const Booking = require('../models/bookingModel');
 const { protect } = require('../middleware/authMiddleware');
+const { path } = require('pdfkit');
 
 const router = express.Router();
 
@@ -139,6 +140,40 @@ router.get('/nutritionist', protect, async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch bookings', error: error.message });
   }
 });
+
+// GET api/bookings/trainer
+// @desc    Get bookings for projects created by the logged-in trainer
+// @access  Private (Trainer)
+router.get('/trainer', protect, async (req, res) => {
+  try {
+    // Ensure the user has the 'trainer' role
+    if (req.user.role !== 'trainer') {
+      return res.status(403).json({ message: 'Only trainers can view these bookings.' });
+    }
+
+    // Fetch bookings where the program's creator is the logged-in trainer
+    const bookings = await Booking.find()
+      .populate({
+        path: 'program',
+        match: { creator: req.user.id }, // Match programs created by the logged-in trainer
+        populate: {
+          path: 'creator',
+          select: 'name role', // Select only the name and role fields
+        },
+      })
+      .populate('client', 'name'); // Populate the client field with the name
+
+      const filteredBookings = bookings.filter((booking) => booking.program !== null);
+
+    res.status(200).json(filteredBookings);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch bookings', error: error.message });
+  }
+});
+
+
+
+
 router.get('/:id', protect, async (req, res) => {
   try {
       const booking = await Booking.findById(req.params.id).populate({

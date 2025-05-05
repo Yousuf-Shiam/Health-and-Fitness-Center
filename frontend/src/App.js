@@ -21,6 +21,7 @@ import Mealplan from './pages/clients/Mealplan';
 
 import MealPlanReview from './pages/nutritionists/mealPlanReview'; // Import the MealPlanReview component
 import Notifications from './pages/clients/Notifications';
+import BookedTrainings from './pages/trainers/bookedTrainings';
 
 function App() {
   return (
@@ -79,7 +80,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/trainer-profile" element={<TrainerProfile />} />
+        <Route path="/trainer-profile"
+          element={
+            <ProtectedRoute>
+              <TrainerProfile />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/nutritionist-profile"
           element={
@@ -136,6 +144,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Notifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/trainer-booked-trainings"
+          element={
+            <ProtectedRoute>
+              <BookedTrainings />
             </ProtectedRoute>
           }
         />
