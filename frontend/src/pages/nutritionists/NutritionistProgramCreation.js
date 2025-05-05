@@ -31,7 +31,7 @@ function NutritionistProgramCreation() {
       console.log('Program Data:', programData); // Debugging: Log program data
       console.log('Token:', token); // Debugging: Log token
 
-      const response = await fetch('${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/programs', {
+      const response = await fetch('http://localhost:5000/api/programs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

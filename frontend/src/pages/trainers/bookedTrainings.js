@@ -18,7 +18,7 @@ const BookedTrainings = () => {
           return;
         }
 
-        const response = await fetch('${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/bookings/trainer', {
+        const response = await fetch('http://localhost:5000/api/bookings/trainer', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -50,7 +50,7 @@ const BookedTrainings = () => {
         return;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/bookings/${selectedBookingId}/reschedule`, {
+      const response = await fetch(`http://localhost:5000/api/bookings/${selectedBookingId}/reschedule`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ const BookedTrainings = () => {
         return;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/bookings/${bookingId}/status`, {
+      const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

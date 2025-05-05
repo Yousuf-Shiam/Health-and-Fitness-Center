@@ -31,7 +31,7 @@ function TrainerProfile() {
         setDecodedToken(decoded); // Store decoded token data
 
         // Fetch user details using the ID from the decoded token
-        const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/trainers/${decoded.id}`, {
+        const response = await fetch(`http://localhost:5000/api/trainers/${decoded.id}`, {
           headers: {
             Authorization: `Bearer ${storedToken}`,
           },
@@ -64,7 +64,7 @@ function TrainerProfile() {
       }
 
       // Send a PUT request to update the user details
-      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/trainers/${decodedToken.id}`, {
+      const response = await fetch(`http://localhost:5000/api/trainers/${decodedToken.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

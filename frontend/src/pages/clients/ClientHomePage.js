@@ -137,7 +137,7 @@ function ClientHomePage() {
         const decoded = jwtDecode(token);
 
         // Fetch user details using the ID from the decoded token
-        const userResponse = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/users/${decoded.id}`, {
+        const userResponse = await fetch(`http://localhost:5000/api/users/${decoded.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -151,7 +151,7 @@ function ClientHomePage() {
         setClientName(userData.name);
 
         // Fetch all users
-        const usersResponse = await fetch('${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/users', {
+        const usersResponse = await fetch('http://localhost:5000/api/users', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -211,7 +211,7 @@ function ClientHomePage() {
       }
   
     // Check if the program is already booked
-    const existingBookingResponse = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/bookings`, {
+    const existingBookingResponse = await fetch(`http://localhost:5000/api/bookings`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
