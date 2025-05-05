@@ -14,7 +14,7 @@ const BookedTrainings = () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          alert('You must be logged in to view bookings.');
+          alert('You must be logged in to view bookings!');
           return;
         }
 
