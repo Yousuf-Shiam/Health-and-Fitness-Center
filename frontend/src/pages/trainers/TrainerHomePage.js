@@ -23,7 +23,7 @@ function TrainerHomePage() {
         console.log('Decoded Token:', decoded); // Debugging: Log decoded token
 
         // Fetch all programs
-        const programsResponse = await fetch('http://localhost:5000/api/programs', {
+        const programsResponse = await fetch('${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/programs', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -44,7 +44,7 @@ function TrainerHomePage() {
 
         setTrainerName(filteredPrograms[0]?.creator.name || ''); // Set trainer's name from the first program's creator
         // Fetch bookings for the filtered programs
-        const bookingsResponse = await fetch('http://localhost:5000/api/bookings', {
+        const bookingsResponse = await fetch('${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/bookings', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

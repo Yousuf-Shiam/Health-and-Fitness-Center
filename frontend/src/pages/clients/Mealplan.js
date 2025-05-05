@@ -142,7 +142,7 @@ function Mealplan() {
         const mealPlansResponse = await getMealPlans();
         setMealPlans(mealPlansResponse.data);
 
-        const userResponse = await fetch(`http://localhost:5000/api/users/${decoded.id}`, {
+        const userResponse = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/users/${decoded.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

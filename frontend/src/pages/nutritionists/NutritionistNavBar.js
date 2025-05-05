@@ -21,7 +21,7 @@ function NutritionistNavBar() {
         const decoded = jwtDecode(token);
 
         // Fetch user details using the ID from the decoded token
-        const response = await fetch(`http://localhost:5000/api/users/${decoded.id}`, {
+        const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/users/${decoded.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

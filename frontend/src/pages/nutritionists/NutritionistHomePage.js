@@ -22,14 +22,14 @@ function NutritionistHomePage() {
         console.log('Decoded Token:', decoded); // Debugging: Log decoded token
     
         //Fetch user details to get the nutritionist's name
-        const userResponse = await fetch(`http://localhost:5000/api/users/${decoded.id}`, {
+        const userResponse = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/users/${decoded.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         // Fetch all programs
-        const programsResponse = await fetch('http://localhost:5000/api/programs', {
+        const programsResponse = await fetch('${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/programs', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -49,7 +49,7 @@ function NutritionistHomePage() {
         console.log('Filtered Programs:', filteredPrograms); // Debugging: Log filtered programs
     
         // Fetch bookings for the filtered programs
-        const bookingsResponse = await fetch('http://localhost:5000/api/bookings', {
+        const bookingsResponse = await fetch('${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/bookings', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

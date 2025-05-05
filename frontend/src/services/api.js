@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api', // Backend URL
+  baseURL: '${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api', // Backend URL
 });
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token'); // Retrieve the token from localStorage

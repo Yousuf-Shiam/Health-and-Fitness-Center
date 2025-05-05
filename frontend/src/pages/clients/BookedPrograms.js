@@ -28,7 +28,7 @@ const BookedPrograms = () => {
         setUser(decoded); // Store the decoded user information in state
 
         // Fetch all bookings from the backend
-        const response = await fetch('http://localhost:5000/api/bookings', {
+        const response = await fetch('${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/bookings', {
           headers: {
             Authorization: `Bearer ${token}`, // Include the token in the Authorization header
           },
@@ -58,7 +58,7 @@ const BookedPrograms = () => {
         return;
       }
   
-      const response = await fetch(`http://localhost:5000/api/bookings/${selectedBookingId}/reschedule`, {
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/bookings/${selectedBookingId}/reschedule`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ const BookedPrograms = () => {
         return;
       }
   
-      const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}/status`, {
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ const BookedPrograms = () => {
         return;
       }
   
-      const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}/status`, {
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -175,7 +175,7 @@ const BookedPrograms = () => {
         return;
       }
     
-      const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}`, {
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/bookings/${bookingId}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -208,7 +208,7 @@ const BookedPrograms = () => {
         return;
       }
   
-      const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}/status`, {
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
