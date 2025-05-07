@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { jsPDF } from 'jspdf'; // Import jsPDF
 
 const DemoPayment = () => {
     const navigate = useNavigate(); // Initialize useNavigate
@@ -35,7 +36,32 @@ const DemoPayment = () => {
     };
 
     const handlePayment = () => {
-        alert('Payment Successful!');
+        // Generate the receipt
+        const doc = new jsPDF();
+
+        // Add receipt content
+        doc.setFontSize(16);
+        doc.text('Payment Receipt', 20, 20);
+
+        doc.setFontSize(12);
+        doc.text('Booking Information:', 20, 40);
+        doc.text('Program Name: Personal Training', 20, 50);
+        doc.text('Trainer: John Doe', 20, 60);
+        doc.text('Duration: 12 weeks', 20, 70);
+
+        doc.text('Payment Information:', 20, 90);
+        doc.text('Payment Method: Credit/Debit Card', 20, 100);
+        doc.text('Amount Paid: $200', 20, 110);
+
+        doc.text('Client Information:', 20, 130);
+        doc.text('Client Name: Jane Smith', 20, 140);
+        doc.text('Email: jane.smith@example.com', 20, 150);
+
+        // Save the PDF
+        doc.save('payment-receipt.pdf');
+
+        // Show success message and navigate back to client home
+        alert('Payment Successful! Receipt has been downloaded.');
         navigate('/client-home'); // Redirect to client home page
     };
 
