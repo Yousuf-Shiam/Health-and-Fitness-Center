@@ -1,5 +1,6 @@
 const MealPlan = require('../models/MealplanModel'); // Import the MealPlan model
 const User = require('../models/userModel'); // Import the User model
+const { sendMealPlanNotification } = require('../controllers/notificationController'); // Import notification controller
 
 // @desc    Create a new meal plan
 // @route   POST /api/mealplans
@@ -22,10 +23,13 @@ exports.createMealPlan = async (req, res) => {
       creator: req.user._id, // Use the authenticated user's ID
     });
 
+    // Send notification
+    await sendMealPlanNotification(req.user._id, newMealPlan._id);
+
     res.status(201).json(newMealPlan);
   } catch (error) {
-    console.error('Error creating meal plan:', error);
-    res.status(500).json({ message: 'Error creating meal plan', error });
+    console.error('Error creating meal plan:', error.message);
+    res.status(500).json({ message: 'Error creating meal plan', error: error.message });
   }
 };
 

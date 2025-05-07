@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer'; // Assuming you have a Footer component
 
+
 function HomePage() {
   const styles = {
     container: {
@@ -110,7 +111,7 @@ function HomePage() {
         <div style={styles.rightSection}>
           <div style={styles.card}>
             <img
-              src="https://via.placeholder.com/200x150" // Replace with actual image URL
+              src="/images/trainer.png"
               alt="Trainer"
               style={styles.cardImage}
             />
@@ -118,7 +119,7 @@ function HomePage() {
           </div>
           <div style={styles.card}>
             <img
-              src="https://via.placeholder.com/200x150" // Replace with actual image URL
+              src="/images/nutritionist (2).png"
               alt="Nutrition"
               style={styles.cardImage}
             />
@@ -126,7 +127,7 @@ function HomePage() {
           </div>
           <div style={styles.card}>
             <img
-              src="https://via.placeholder.com/200x150" // Replace with actual image URL
+              src="/images/programs.png"
               alt="Programs"
               style={styles.cardImage}
             />

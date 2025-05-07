@@ -22,6 +22,52 @@ exports.createNotification = async (req, res) => {
   }
 };
 
+// Send a meal plan notification
+exports.sendMealPlanNotification = async (userId, mealPlanId) => {
+  try {
+    await Notification.create({
+      userId,
+      title: 'Meal Plan Updated',
+      message: 'Your meal plan has been updated. Check it out for new recommendations!',
+      type: 'meal_plan',
+      relatedId: mealPlanId,
+      relatedModel: 'MealPlan',
+    });
+  } catch (error) {
+    console.error('Error sending meal plan notification:', error.message);
+  }
+};
+
+// Send a fitness achievement notification
+exports.sendAchievementNotification = async (userId, achievement) => {
+  try {
+    await Notification.create({
+      userId,
+      title: 'Congratulations!',
+      message: `You have achieved a new milestone: ${achievement}. Keep up the great work!`,
+      type: 'achievement',
+    });
+  } catch (error) {
+    console.error('Error sending achievement notification:', error.message);
+  }
+};
+
+// Send a session notification
+exports.sendSessionNotification = async (userId, sessionId, sessionDate) => {
+  try {
+    await Notification.create({
+      userId,
+      title: 'Upcoming Session Reminder',
+      message: `You have a session scheduled on ${sessionDate}. Don't forget to attend!`,
+      type: 'session',
+      relatedId: sessionId,
+      relatedModel: 'Program',
+    });
+  } catch (error) {
+    console.error('Error sending session notification:', error.message);
+  }
+};
+
 // Get all notifications for a user
 exports.getNotifications = async (req, res) => {
   try {
@@ -34,7 +80,7 @@ exports.getNotifications = async (req, res) => {
 };
 
 // Mark a notification as read
-exports.markAsRead = async (req, res) => {
+exports.markNotificationAsRead = async (req, res) => {
   try {
     const { notificationId } = req.params;
 
@@ -51,4 +97,8 @@ exports.markAsRead = async (req, res) => {
     console.error('Error marking notification as read:', error);
     res.status(500).json({ message: 'Failed to mark notification as read' });
   }
+};
+
+exports.getUserNotifications = async (req, res) => {
+  // Function logic
 };
