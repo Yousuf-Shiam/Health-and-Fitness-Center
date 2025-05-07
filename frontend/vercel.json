@@ -1,0 +1,9 @@
+{
+    "version": 2,
+    "routes": [
+      {
+        "src": "/api/(.*)",
+        "dest": "https://health-and-fitness-center-backend.vercel.app/api"
+      }
+    ]
+  }

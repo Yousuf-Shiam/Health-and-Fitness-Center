@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {jwtDecode} from 'jwt-decode'; // Correct import for jwt-decode
 import TrainerNavBar from './TrainerNavBar'; // Import the TrainerNavBar component
 import Footer from '../../components/Footer';
-import { set } from 'mongoose';
 
 function TrainerHomePage() {
   const [trainerName, setTrainerName] = useState(''); // State to store the trainer's name
