@@ -4,7 +4,7 @@ const notificationSchema = mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // Reference to the user receiving the notification
+      ref: 'User',
       required: true,
     },
     title: {
@@ -17,20 +17,20 @@ const notificationSchema = mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['session', 'meal_plan', 'achievement'], // Type of notification
+      enum: ['session', 'meal_plan', 'achievement'],
       required: true,
     },
     relatedId: {
       type: mongoose.Schema.Types.ObjectId,
-      refPath: 'relatedModel', // Dynamic reference to related models
+      refPath: 'relatedModel',
     },
     relatedModel: {
       type: String,
-      enum: ['Program', 'MealPlan'], // Related models (e.g., Program, MealPlan)
+      enum: ['Program', 'MealPlan'],
     },
     isRead: {
       type: Boolean,
-      default: false, // Whether the notification has been read
+      default: false,
     },
   },
   { timestamps: true }
