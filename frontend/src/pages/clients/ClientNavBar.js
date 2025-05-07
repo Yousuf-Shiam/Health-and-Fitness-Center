@@ -303,6 +303,26 @@ function ClientNavBar() {
         >
           Logout
         </button>
+        <button
+          style={styles.button}
+          onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
+          onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
+          onClick={() => navigate('/meal-tracking')} // Navigate to Meal Tracking page
+        >
+          Meal Tracking
+        </button>
+        
+        <button
+          style={styles.button}
+          onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
+          onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
+          onClick={() => navigate('/fitness-tracking')} // Navigate to Fitness Tracking page
+        >
+          Fitness Tracking
+        </button>
+
+
+
         {/* Add more options here */}
       </div>
     </>
