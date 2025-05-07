@@ -3,6 +3,7 @@ import axios from 'axios';
 const API = axios.create({
   baseURL: 'http://localhost:5000/api', // Backend URL
 });
+
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token'); // Retrieve the token from localStorage
   if (token) {
@@ -71,5 +72,9 @@ export const markNotificationAsRead = async (notificationId) => {
   return response.data;
 };
 
-export default API;
+// Fitness Tracking API calls (New)
+export const getWorkouts = () => API.get('/workouts'); // Fetch all workouts for the logged-in user
+export const addWorkout = (workoutData) => API.post('/workouts', workoutData); // Add a new workout
+export const deleteWorkout = (workoutId) => API.delete(`/workouts/${workoutId}`); // Delete a workout
 
+export default API;

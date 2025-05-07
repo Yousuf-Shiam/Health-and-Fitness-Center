@@ -9,21 +9,22 @@ import NutritionistHomePage from './pages/nutritionists/NutritionistHomePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ClientProfile from './pages/clients/ClientProfile';
 import NutritionistProfile from './pages/nutritionists/NutritionistProfile';
-import NutritionistProgramCreation from './pages/nutritionists/NutritionistProgramCreation'; // Import the new component
+import NutritionistProgramCreation from './pages/nutritionists/NutritionistProgramCreation';
 import TrainerProfile from './pages/trainers/TrainerProfile';
 import TrainerProgramCreation from './pages/trainers/TrainerProgramCreation';
 import BookedPrograms from './pages/clients/BookedPrograms';
-import BookedProjects from './pages/nutritionists/bookedProjects'; // Import the component
+import BookedProjects from './pages/nutritionists/bookedProjects';
 import Payment from './pages/clients/Payment';
-import DemoPayment from './pages/clients/DemoPayment'; // Import the demo payment page
+import DemoPayment from './pages/clients/DemoPayment';
 import CreateMealPlan from './pages/clients/createmealplan';
 import Mealplan from './pages/clients/Mealplan';
-
-import MealPlanReview from './pages/nutritionists/mealPlanReview'; // Import the MealPlanReview component
+import MealTracking from './pages/clients/mealtracking'; // Import the MealTracking component
+import FitnessTracking from './pages/clients/fitnesstracking'; // Import the FitnessTracking component
+import MealPlanReview from './pages/nutritionists/mealPlanReview';
 import Notifications from './pages/clients/Notifications';
 import BookedTrainings from './pages/trainers/bookedTrainings';
-import AdminLogin from './pages/admin/adminLogin'; // Import AdminLogin
-import AdminDashboard from './pages/admin/admin'; // Import AdminDashboard
+import AdminLogin from './pages/admin/adminLogin';
+import AdminDashboard from './pages/admin/admin';
 
 function App() {
   return (
@@ -82,14 +83,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/trainer-profile"
+        <Route
+          path="/trainer-profile"
           element={
             <ProtectedRoute>
               <TrainerProfile />
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/nutritionist-profile"
           element={
@@ -131,8 +132,22 @@ function App() {
             </ProtectedRoute>
           }
         />
-       
-
+        <Route
+          path="/meal-tracking"
+          element={
+            <ProtectedRoute>
+              <MealTracking />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/fitness-tracking"
+          element={
+            <ProtectedRoute>
+              <FitnessTracking />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/nutritionist-mealplan-review"
           element={

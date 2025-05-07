@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import ClientNavBar from './ClientNavBar'; // Import the ClientNavBar component
 import Footer from '../../components/Footer';
-import {jwtDecode} from 'jwt-decode'; // Correct import for jwt-decode
-import { getFitnessPrograms } from '../../services/api'; // Import the API function
+import { jwtDecode } from 'jwt-decode'; // Correct import for jwt-decode
+import { getFitnessPrograms, getWorkouts, getMealTracking } from '../../services/api'; // Import the API functions
 import { createBooking } from '../../services/api'; // Import the booking API function
 
 function ClientHomePage() {
@@ -10,6 +10,8 @@ function ClientHomePage() {
   const [trainers, setTrainers] = useState([]); // State to store trainers
   const [nutritionists, setNutritionists] = useState([]); // State to store nutritionists
   const [fitnessPrograms, setFitnessPrograms] = useState([]); // State to store fitness programs
+  const [workouts, setWorkouts] = useState([]); // State to store fitness tracking data
+  const [meals, setMeals] = useState([]); // State to store meal tracking data
   const [searchQuery, setSearchQuery] = useState(''); // State for search query
   const [startDate, setStartDate] = useState(''); // State for start date
 
@@ -83,8 +85,21 @@ function ClientHomePage() {
       backgroundColor: '#f9f9f9',
       transition: 'all 0.3s ease',
     },
-    itemHover: {
+    summaryTable: {
+      width: '100%',
+      borderCollapse: 'collapse',
+      marginTop: '1rem',
+    },
+    tableHeader: {
       backgroundColor: '#f0f8ff',
+      fontWeight: 'bold',
+    },
+    tableRow: {
+      borderBottom: '1px solid #ccc',
+    },
+    tableCell: {
+      padding: '0.8rem',
+      textAlign: 'center',
     },
     searchBar: {
       marginBottom: '1rem',
@@ -95,10 +110,6 @@ function ClientHomePage() {
       borderRadius: '8px',
       outline: 'none',
       transition: 'all 0.3s ease',
-    },
-    searchBarFocus: {
-      borderColor: '#0a3563',
-      boxShadow: '0 0 8px rgba(10, 53, 99, 0.2)',
     },
     datePicker: {
       marginLeft: '1rem',
@@ -123,7 +134,7 @@ function ClientHomePage() {
     },
   };
 
-  // Fetch client name, trainers, nutritionists, and fitness programs
+  // Fetch client name, trainers, nutritionists, fitness programs, workouts, and meals
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -173,6 +184,14 @@ function ClientHomePage() {
         // Fetch fitness programs
         const programsResponse = await getFitnessPrograms();
         setFitnessPrograms(programsResponse.data);
+
+        // Fetch workouts
+        const workoutsResponse = await getWorkouts();
+        setWorkouts(workoutsResponse.data);
+
+        // Fetch meals
+        const mealsResponse = await getMealTracking(decoded.id);
+        setMeals(mealsResponse.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -181,18 +200,34 @@ function ClientHomePage() {
     fetchData();
   }, []);
 
+  // Calculate total calories burned and consumed
+  const calculateSummary = () => {
+    const totalCaloriesBurned = workouts.reduce(
+      (total, workout) => total + workout.caloriesBurned,
+      0
+    );
+    const totalCaloriesConsumed = meals.reduce(
+      (total, meal) => total + meal.calories,
+      0
+    );
+
+    return { totalCaloriesBurned, totalCaloriesConsumed };
+  };
+
+  const { totalCaloriesBurned, totalCaloriesConsumed } = calculateSummary();
+
   // Filter programs based on search query
   const filteredPrograms = fitnessPrograms.filter((program) =>
     program.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-    // Handle start date change
-    const handleStartDateChange = (programId, date) => {
-      setStartDate((prevDates) => ({
-        ...prevDates,
-        [programId]: date, // Update the start date for the specific program
-      }));
-    };
+  // Handle start date change
+  const handleStartDateChange = (programId, date) => {
+    setStartDate((prevDates) => ({
+      ...prevDates,
+      [programId]: date, // Update the start date for the specific program
+    }));
+  };
 
   // Handle booking a program
   const handleBookProgram = async (programId) => {
@@ -210,25 +245,24 @@ function ClientHomePage() {
         return;
       }
   
-    // Check if the program is already booked
-    const existingBookingResponse = await fetch(`http://localhost:5000/api/bookings`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      // Check if the program is already booked
+      const existingBookingResponse = await fetch(`http://localhost:5000/api/bookings`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (existingBookingResponse.ok) {
-      const existingBookings = await existingBookingResponse.json();
-      const isAlreadyBooked = existingBookings.some(
-        (booking) => booking.program._id === programId
-      );
+      if (existingBookingResponse.ok) {
+        const existingBookings = await existingBookingResponse.json();
+        const isAlreadyBooked = existingBookings.some(
+          (booking) => booking.program._id === programId
+        );
 
-      if (isAlreadyBooked) {
-        alert('You have already booked this program.');
-        return;
+        if (isAlreadyBooked) {
+          alert('You have already booked this program.');
+          return;
+        }
       }
-    }
-
 
       // Prepare booking data
       const bookingData = {
@@ -245,7 +279,6 @@ function ClientHomePage() {
         },
       });
         
-  
       alert('Program booked successfully!');
     } catch (error) {
       console.error('Failed to book program:', error.response?.data || error.message);
@@ -280,6 +313,29 @@ function ClientHomePage() {
           <p style={styles.subheading}>
             Manage your fitness activities, track progress, and achieve your goals.
           </p>
+
+          {/* Summary Section */}
+          <div style={styles.section}>
+            <h2 style={styles.sectionHeading}>Your Fitness & Meal Summary</h2>
+            <table style={styles.summaryTable}>
+              <thead>
+                <tr style={styles.tableHeader}>
+                  <th style={styles.tableCell}>Total Calories Burned</th>
+                  <th style={styles.tableCell}>Total Calories Consumed</th>
+                  <th style={styles.tableCell}>Net Calories</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style={styles.tableRow}>
+                  <td style={styles.tableCell}>{totalCaloriesBurned} kcal</td>
+                  <td style={styles.tableCell}>{totalCaloriesConsumed} kcal</td>
+                  <td style={styles.tableCell}>
+                    {totalCaloriesConsumed - totalCaloriesBurned} kcal
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
           {/* Trainers Section with Search and Collapsible Functionality */}
           <div style={styles.section}>
