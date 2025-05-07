@@ -41,6 +41,7 @@ function TrainerHomePage() {
         );
         console.log('Filtered Programs:', filteredPrograms); // Debugging: Log filtered programs
 
+        setTrainerName(filteredPrograms[0]?.creator.name || ''); // Set trainer's name from the first program's creator
         // Fetch bookings for the filtered programs
         const bookingsResponse = await fetch('http://localhost:5000/api/bookings', {
           headers: {

@@ -168,6 +168,14 @@ function TrainerNavBar() {
           style={styles.button}
           onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
           onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
+          onClick={() => navigate('/trainer-booked-trainings')}
+        >
+          Booked Trainings
+        </button>
+        <button
+          style={styles.button}
+          onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
+          onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
           onClick={handleLogout}
         >
           Logout
