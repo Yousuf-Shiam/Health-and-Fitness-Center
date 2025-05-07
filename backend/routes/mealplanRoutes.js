@@ -60,4 +60,47 @@ router.put('/:id', protect, updateMealPlan);
 // @access  Private (Nutritionist)
 router.put('/:id/recommendations', protect, updateRecommendations);
 
+// @route   GET /api/mealplans/all
+// @desc    Get all meal plans
+// @access  Private (Admin)
+router.get('/all', protect, async (req, res) => {
+  try {
+    // Ensure the user has the 'admin' role
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Only admins can view all meal plans.' });
+    }
+
+    // Fetch all meal plans
+    const mealPlans = await MealPlan.find();
+    res.status(200).json(mealPlans);
+  } catch (error) {
+    console.error('Error fetching all meal plans:', error);
+    res.status(500).json({ message: 'Failed to fetch meal plans', error: error.message });
+  }
+});
+
+// @route   DELETE /api/mealplans/:id
+// @desc    Delete a meal plan
+// @access  Private (Admin)
+router.delete('/:id', protect, async (req, res) => {
+  try {
+    // Ensure the user has the 'admin' role
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Only admins can delete meal plans.' });
+    }
+
+    const mealPlan = await MealPlan.findById(req.params.id);
+
+    if (!mealPlan) {
+      return res.status(404).json({ message: 'Meal plan not found' });
+    }
+
+    await MealPlan.deleteOne({ _id: req.params.id });
+    res.status(200).json({ message: 'Meal plan deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting meal plan:', error);
+    res.status(500).json({ message: 'Failed to delete meal plan', error: error.message });
+  }
+});
+
 module.exports = router;

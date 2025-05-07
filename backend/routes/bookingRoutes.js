@@ -171,8 +171,27 @@ router.get('/trainer', protect, async (req, res) => {
   }
 });
 
+// @desc    Get all bookings
+// @route   GET /api/bookings/all
+// @access  Private (Admin)
+router.get('/all', protect, async (req, res) => {
+  try {
+    // Ensure the user has the 'admin' role
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Only admins can view all bookings.' });
+    }
 
+    // Fetch all bookings and populate related fields
+    const bookings = await Booking.find()
+      .populate('program', 'name price') // Populate program details
+      .populate('client', 'name email'); // Populate client details
 
+    res.status(200).json(bookings);
+  } catch (error) {
+    console.error('Error fetching all bookings:', error);
+    res.status(500).json({ message: 'Failed to fetch bookings', error: error.message });
+  }
+});
 
 router.get('/:id', protect, async (req, res) => {
   try {

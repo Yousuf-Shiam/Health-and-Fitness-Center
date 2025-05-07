@@ -22,6 +22,8 @@ import Mealplan from './pages/clients/Mealplan';
 import MealPlanReview from './pages/nutritionists/mealPlanReview'; // Import the MealPlanReview component
 import Notifications from './pages/clients/Notifications';
 import BookedTrainings from './pages/trainers/bookedTrainings';
+import AdminLogin from './pages/admin/adminLogin'; // Import AdminLogin
+import AdminDashboard from './pages/admin/admin'; // Import AdminDashboard
 
 function App() {
   return (
@@ -152,6 +154,15 @@ function App() {
           element={
             <ProtectedRoute>
               <BookedTrainings />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />

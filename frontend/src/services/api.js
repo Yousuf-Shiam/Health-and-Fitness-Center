@@ -14,6 +14,7 @@ API.interceptors.request.use((config) => {
 // User-related API calls
 export const createUser = (userData) => API.post('/users', userData);
 export const loginUser = (loginData) => API.post('/users/login', loginData); // Login API
+export const adminLogin = (loginData) => API.post('/users/admin-login', loginData);
 export const getUsers = () => API.get('/users');
 export const updateUser = (id, userData) => API.put(`/users/${id}`, userData);
 export const getUserById = (userId) => API.get(`/users/${userId}`);

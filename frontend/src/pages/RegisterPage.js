@@ -121,7 +121,6 @@ function RegisterPage() {
         <option value="client">Client</option>
         <option value="trainer">Trainer</option>
         <option value="nutritionist">Nutritionist</option>
-        <option value="admin">Admin</option>
       </select>
       <input
         type="text"
