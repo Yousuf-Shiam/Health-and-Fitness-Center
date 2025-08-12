@@ -20,6 +20,7 @@ import CreateMealPlan from './pages/clients/createmealplan';
 import Mealplan from './pages/clients/Mealplan';
 import MealTracking from './pages/clients/mealtracking'; // Import the MealTracking component
 import FitnessTracking from './pages/clients/fitnesstracking'; // Import the FitnessTracking component
+import BMIRecommendations from './pages/clients/BMIRecommendations'; // Import the BMIRecommendations component
 import MealPlanReview from './pages/nutritionists/mealPlanReview';
 import Notifications from './pages/clients/Notifications';
 import TrainerNotifications from './pages/trainers/TrainerNotifications';
@@ -148,6 +149,14 @@ function App() {
           element={
             <ProtectedRoute>
               <FitnessTracking />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bmi-recommendations"
+          element={
+            <ProtectedRoute>
+              <BMIRecommendations />
             </ProtectedRoute>
           }
         />

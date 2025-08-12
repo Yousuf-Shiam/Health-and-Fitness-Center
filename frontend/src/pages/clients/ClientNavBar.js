@@ -421,6 +421,15 @@ function ClientNavBar() {
           Fitness Tracking
         </button>
 
+        <button
+          style={styles.button}
+          onMouseOver={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
+          onMouseOut={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
+          onClick={() => navigate('/bmi-recommendations')} // Navigate to BMI Recommendations page
+        >
+          BMI & Health Tips
+        </button>
+
 
 
         {/* Add more options here */}

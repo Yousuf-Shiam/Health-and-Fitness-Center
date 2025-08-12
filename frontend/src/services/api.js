@@ -95,4 +95,8 @@ export const getWorkouts = () => API.get('/workouts'); // Fetch all workouts for
 export const addWorkout = (workoutData) => API.post('/workouts', workoutData); // Add a new workout
 export const deleteWorkout = (workoutId) => API.delete(`/workouts/${workoutId}`); // Delete a workout
 
+// BMI and Recommendations API calls
+export const getBMIRecommendations = () => API.get('/recommendations/bmi-recommendations'); // Get BMI-based recommendations
+export const updatePhysicalData = (physicalData) => API.put('/recommendations/physical-data', physicalData); // Update height, weight, age, gender
+
 export default API;
