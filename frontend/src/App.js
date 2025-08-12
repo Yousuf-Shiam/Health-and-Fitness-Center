@@ -29,6 +29,8 @@ import AdminNotifications from './pages/admin/AdminNotifications';
 import BookedTrainings from './pages/trainers/bookedTrainings';
 import AdminLogin from './pages/admin/adminLogin';
 import AdminDashboard from './pages/admin/admin';
+import StripePayment from './pages/clients/StripePayment'; // Import Stripe Payment component
+import PaymentSuccess from './pages/clients/PaymentSuccess'; // Import Payment Success component
 
 function App() {
   return (
@@ -63,6 +65,9 @@ function App() {
         />
         <Route path="/payment" element={<Payment />} />
         <Route path="/demo-payment" element={<DemoPayment />} />
+        <Route path="/stripe-payment" element={<StripePayment />} />
+        <Route path="/stripe-payment/:bookingId" element={<StripePayment />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route
           path="/trainer-home"
           element={

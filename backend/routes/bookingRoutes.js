@@ -73,12 +73,14 @@ router.get('/', protect, async (req, res) => {
   try {
     const bookings = await Booking.find({ client: req.user.id }).populate({
       path: 'program',
+      select: 'name description price duration role', // Include price field
       populate: {
         path: 'creator', // Populate the creator field inside the program
         select: 'name role', // Select only the name and role fields
       },
     })
-    .populate('client', 'name');
+    .populate('client', 'name')
+    .select('client program status paymentStatus paymentIntentId startDate createdAt updatedAt'); // Include payment fields
 
     res.status(200).json(bookings);
   } catch (error) {
@@ -291,13 +293,15 @@ router.get('/all', protect, async (req, res) => {
 
 router.get('/:id', protect, async (req, res) => {
   try {
-      const booking = await Booking.findById(req.params.id).populate({
-          path: 'program',
-          populate: {
-              path: 'creator',
-              select: 'name role',
-          },
-      });
+      const booking = await Booking.findById(req.params.id)
+          .populate({
+              path: 'program',
+              populate: {
+                  path: 'creator',
+                  select: 'name role',
+              },
+          })
+          .populate('client', 'name email fitnessGoals preferences');
 
       if (!booking) {
           return res.status(404).json({ message: 'Booking not found' });
@@ -307,9 +311,11 @@ router.get('/:id', protect, async (req, res) => {
           clientName: booking.client.name,
           email: booking.client.email,
           programName: booking.program.name,
+          programId: booking.program._id,
           amount: booking.program.price,
           fitnessGoals: booking.client.fitnessGoals,
           preferences: booking.client.preferences,
+          booking: booking // Include full booking details
       });
   } catch (error) {
       res.status(500).json({ message: 'Server error', error: error.message });
