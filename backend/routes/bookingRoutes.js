@@ -1,7 +1,16 @@
 const express = require('express');
 const Booking = require('../models/bookingModel');
 const { protect } = require('../middleware/authMiddleware');
-const { path } = require('pdfkit');
+
+const {
+  sendBookingConfirmationNotification,
+  sendBookingRequestNotification,
+  sendBookingStatusNotification,
+  sendTrainerNotification,
+  sendNutritionistNotification,
+} = require('../controllers/notificationController');
+const Program = require('../models/programModel');
+const User = require('../models/userModel');
 
 const router = express.Router();
 
@@ -16,14 +25,42 @@ router.post('/', protect, async (req, res) => {
       if (req.user.role !== 'client') {
         return res.status(403).json({ message: 'Only clients can book programs.' });
       }
-  
+
       const booking = await Booking.create({
         client: clientId,
         program: programId,
         bookingDate,
         startDate,
       });
-  
+
+      // Get program details for notification
+      const program = await Program.findById(programId).populate('creator', 'name role');
+      const client = await User.findById(clientId, 'name');
+      
+      if (program && client) {
+        // Send booking request notification to client (with actions)
+        await sendBookingRequestNotification(clientId, program.name, startDate, booking._id);
+        
+        // Send role-specific notification to program creator (trainer/nutritionist)
+        if (program.creator.role === 'trainer') {
+          await sendTrainerNotification(
+            program.creator._id, 
+            client.name, 
+            program.name, 
+            startDate, 
+            'new_booking'
+          );
+        } else if (program.creator.role === 'nutritionist') {
+          await sendNutritionistNotification(
+            program.creator._id, 
+            client.name, 
+            program.name, 
+            startDate, 
+            'new_booking'
+          );
+        }
+      }
+
       res.status(201).json(booking);
     } catch (error) {
       res.status(400).json({ message: 'Failed to create booking', error });
@@ -56,18 +93,70 @@ router.get('/', protect, async (req, res) => {
 router.put('/:id/status', protect, async (req, res) => {
   try {
     const { status } = req.body;
-    const booking = await Booking.findById(req.params.id);
+    console.log('Updating booking status:', { bookingId: req.params.id, status }); // Debug log
+
+    const booking = await Booking.findById(req.params.id)
+      .populate('program')
+      .populate('client', 'name')
+      .populate({
+        path: 'program',
+        populate: {
+          path: 'creator',
+          select: 'name role'
+        }
+      });
 
     if (!booking) {
+      console.log('Booking not found:', req.params.id); // Debug log
       return res.status(404).json({ message: 'Booking not found' });
     }
 
     booking.status = status; // Update the status
     await booking.save();
+    console.log('Booking status updated successfully'); // Debug log
+
+    // Send status change notification to client
+    try {
+      if (booking.program) {
+        await sendBookingStatusNotification(
+          booking.client._id,
+          booking.program.name,
+          booking.startDate,
+          status
+        );
+
+        // Send role-specific notification to program creator (trainer/nutritionist)
+        if (booking.program.creator) {
+          const notificationType = status === 'confirmed' ? 'booking_confirmed' : 
+                                  status === 'cancelled' ? 'booking_cancelled' : 'session_reminder';
+          
+          if (booking.program.creator.role === 'trainer') {
+            await sendTrainerNotification(
+              booking.program.creator._id,
+              booking.client.name,
+              booking.program.name,
+              booking.startDate,
+              notificationType
+            );
+          } else if (booking.program.creator.role === 'nutritionist') {
+            await sendNutritionistNotification(
+              booking.program.creator._id,
+              booking.client.name,
+              booking.program.name,
+              booking.startDate,
+              notificationType
+            );
+          }
+        }
+      }
+    } catch (notificationError) {
+      console.error('Failed to send notification, but booking was updated:', notificationError.message);
+    }
 
     res.status(200).json({ message: 'Booking status updated successfully', booking });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to update booking status', error });
+    console.error('Failed to update booking status:', error); // Debug log
+    res.status(500).json({ message: 'Failed to update booking status', error: error.message });
   }
 });
 
@@ -103,6 +192,13 @@ router.put('/:id/reschedule', async (req, res) => {
 
     booking.startDate = startDate;
     const updatedBooking = await booking.save();
+
+    // Notify both client and program creator about reschedule
+    const program = await Program.findById(booking.program);
+    if (program) {
+      await sendSessionNotification(program.creator, booking._id, startDate);
+    }
+    await sendSessionNotification(booking.client, booking._id, startDate);
 
     res.status(200).json(updatedBooking);
   } catch (error) {

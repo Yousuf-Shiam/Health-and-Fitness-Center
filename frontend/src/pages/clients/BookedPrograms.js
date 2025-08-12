@@ -98,6 +98,8 @@ const BookedPrograms = () => {
         alert('You must be logged in to update the booking status.');
         return;
       }
+
+      console.log('Canceling booking:', { bookingId, newStatus }); // Debug log
   
       const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}/status`, {
         method: 'PUT',
@@ -107,12 +109,14 @@ const BookedPrograms = () => {
         },
         body: JSON.stringify({ status: newStatus }),
       });
+
+      console.log('Response status:', response.status); // Debug log
+      const responseData = await response.json();
+      console.log('Response data:', responseData); // Debug log
   
       if (!response.ok) {
-        throw new Error('Failed to update booking status');
+        throw new Error(responseData.message || 'Failed to update booking status');
       }
-  
-      const updatedBooking = await response.json();
   
       // Update the booking's status in the state
       setBookings((prevBookings) =>
@@ -124,6 +128,7 @@ const BookedPrograms = () => {
       alert('Booking canceled successfully!');
     } catch (error) {
       console.error('Failed to update booking status:', error.message);
+      console.error('Full error:', error); // More detailed error log
       alert('Failed to update booking status. Please try again.');
     }
   };
@@ -136,6 +141,8 @@ const BookedPrograms = () => {
         alert('You must be logged in to update the booking status.');
         return;
       }
+
+      console.log('Updating booking status:', { bookingId, newStatus }); // Debug log
   
       const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}/status`, {
         method: 'PUT',
@@ -145,12 +152,14 @@ const BookedPrograms = () => {
         },
         body: JSON.stringify({ status: newStatus }),
       });
+
+      console.log('Response status:', response.status); // Debug log
+      const responseData = await response.json();
+      console.log('Response data:', responseData); // Debug log
   
       if (!response.ok) {
-        throw new Error('Failed to update booking status');
+        throw new Error(responseData.message || 'Failed to update booking status');
       }
-  
-      const updatedBooking = await response.json();
   
       // Update the booking's status in the state
       setBookings((prevBookings) =>
@@ -162,6 +171,7 @@ const BookedPrograms = () => {
       alert('Booking status updated successfully!');
     } catch (error) {
       console.error('Failed to update booking status:', error.message);
+      console.error('Full error:', error); // More detailed error log
       alert('Failed to update booking status. Please try again.');
     }
   };

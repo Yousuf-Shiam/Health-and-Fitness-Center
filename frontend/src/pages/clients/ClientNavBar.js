@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
 import { Link } from 'react-router-dom';
-import { getNotifications, markNotificationAsRead } from '../../services/api';
+import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead, deleteAllNotifications } from '../../services/api';
+import NotificationItem from '../../components/NotificationItem';
 
 function ClientNavBar() {
   const [clientName, setClientName] = useState(''); // State to hold client name
@@ -78,6 +79,49 @@ function ClientNavBar() {
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
+  };
+
+  const handleAction = (notificationId, action) => {
+    // Remove the notification from the list after action and refresh data
+    setNotifications((prev) =>
+      prev.filter((notification) => notification._id !== notificationId)
+    );
+    setShowDropdown(false);
+    // Refresh notifications after a short delay to show new confirmation notification
+    setTimeout(() => {
+      fetchNotifications();
+    }, 1000);
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllNotificationsAsRead();
+      setNotifications((prev) =>
+        prev.map((notification) => ({ ...notification, isRead: true }))
+      );
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    if (window.confirm('Are you sure you want to delete all notifications? This action cannot be undone.')) {
+      try {
+        await deleteAllNotifications();
+        setNotifications([]);
+        setUnreadCount(0);
+      } catch (error) {
+        console.error('Error deleting all notifications:', error);
+      }
+    }
+  };
+
+  const handleDelete = (notificationId) => {
+    setNotifications((prev) =>
+      prev.filter((notification) => notification._id !== notificationId)
+    );
+    setUnreadCount((prev) => Math.max(0, prev - 1));
   };
 
   const firstLetter = clientName.charAt(0).toUpperCase();
@@ -234,20 +278,76 @@ function ClientNavBar() {
             </div>
             {showDropdown && (
               <div style={styles.dropdown}>
-                <h3>User Notifications</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <h3 style={{ margin: 0 }}>User Notifications</h3>
+                  {notifications.length > 0 && (
+                    <div>
+                      <button
+                        style={{
+                          backgroundColor: '#28a745',
+                          color: 'white',
+                          border: 'none',
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '11px',
+                          marginRight: '4px'
+                        }}
+                        onClick={handleMarkAllAsRead}
+                      >
+                        Mark All Read
+                      </button>
+                      <button
+                        style={{
+                          backgroundColor: '#dc3545',
+                          color: 'white',
+                          border: 'none',
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '11px'
+                        }}
+                        onClick={handleDeleteAll}
+                      >
+                        Delete All
+                      </button>
+                    </div>
+                  )}
+                </div>
                 {notifications.length === 0 ? (
                   <p>No notifications available.</p>
                 ) : (
-                  notifications.map((notification) => (
-                    <div key={notification._id} style={styles.notification}>
-                      <h4>{notification.title}</h4>
-                      <p>{notification.message}</p>
-                      <small>{new Date(notification.createdAt).toLocaleString()}</small>
-                      {!notification.isRead && (
-                        <button onClick={() => handleMarkAsRead(notification._id)}>Mark as Read</button>
-                      )}
-                    </div>
-                  ))
+                  <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    {notifications.slice(0, 3).map((notification) => (
+                      <NotificationItem
+                        key={notification._id}
+                        notification={notification}
+                        onAction={handleAction}
+                        onMarkAsRead={handleMarkAsRead}
+                        onDelete={handleDelete}
+                      />
+                    ))}
+                    {notifications.length > 3 && (
+                      <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                        <button
+                          style={{
+                            backgroundColor: '#0f5132',
+                            color: 'white',
+                            border: 'none',
+                            padding: '5px 10px',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                          onClick={() => {
+                            setShowDropdown(false);
+                            navigate('/notifications');
+                          }}
+                        >
+                          View All Notifications
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}

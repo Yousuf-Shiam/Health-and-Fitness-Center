@@ -22,6 +22,9 @@ import MealTracking from './pages/clients/mealtracking'; // Import the MealTrack
 import FitnessTracking from './pages/clients/fitnesstracking'; // Import the FitnessTracking component
 import MealPlanReview from './pages/nutritionists/mealPlanReview';
 import Notifications from './pages/clients/Notifications';
+import TrainerNotifications from './pages/trainers/TrainerNotifications';
+import NutritionistNotifications from './pages/nutritionists/NutritionistNotifications';
+import AdminNotifications from './pages/admin/AdminNotifications';
 import BookedTrainings from './pages/trainers/bookedTrainings';
 import AdminLogin from './pages/admin/adminLogin';
 import AdminDashboard from './pages/admin/admin';
@@ -161,6 +164,30 @@ function App() {
           element={
             <ProtectedRoute>
               <Notifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/trainer-notifications"
+          element={
+            <ProtectedRoute>
+              <TrainerNotifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/nutritionist-notifications"
+          element={
+            <ProtectedRoute>
+              <NutritionistNotifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-notifications"
+          element={
+            <ProtectedRoute>
+              <AdminNotifications />
             </ProtectedRoute>
           }
         />

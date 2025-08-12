@@ -237,14 +237,14 @@ function ClientHomePage() {
         alert('You must be logged in to book a program.');
         return;
       }
-  
+
       // Decode the token to get the user's details
       const decoded = jwtDecode(token);
       if (decoded.role !== 'client') {
         alert('Only clients can book programs.');
         return;
       }
-  
+
       // Check if the program is already booked
       const existingBookingResponse = await fetch(`http://localhost:5000/api/bookings`, {
         headers: {
@@ -271,18 +271,18 @@ function ClientHomePage() {
         bookingDate: new Date().toISOString(), // Current date as the booking date
         startDate: startDate[programId], // Start date for the program
       };
-  
+
       // Send the booking request with the authorization token and booking data
       await createBooking(bookingData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-        
-      alert('Program booked successfully!');
+
+      alert('Booking request sent! Please check your notifications to confirm.');
     } catch (error) {
       console.error('Failed to book program:', error.response?.data || error.message);
-  
+
       // Handle specific error cases
       if (error.response?.status === 401) {
         alert('You are not authorized to book this program. Please log in.');

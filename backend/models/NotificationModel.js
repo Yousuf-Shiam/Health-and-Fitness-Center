@@ -17,7 +17,7 @@ const notificationSchema = mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['session', 'meal_plan', 'achievement'],
+      enum: ['session', 'meal_plan', 'achievement', 'booking_confirmation', 'booking_request'],
       required: true,
     },
     relatedId: {
@@ -26,11 +26,24 @@ const notificationSchema = mongoose.Schema(
     },
     relatedModel: {
       type: String,
-      enum: ['Program', 'MealPlan'],
+      enum: ['Program', 'MealPlan', 'Booking'],
     },
     isRead: {
       type: Boolean,
       default: false,
+    },
+    hasActions: {
+      type: Boolean,
+      default: false,
+    },
+    actions: [{
+      label: String,
+      action: String,
+      style: String, // 'primary', 'secondary', 'danger'
+    }],
+    isActionable: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }
