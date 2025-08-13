@@ -17,6 +17,15 @@ const bookingSchema = mongoose.Schema(
       enum: ['pending', 'confirmed', 'cancelled', 'active', 'completed'],
       default: 'pending',
     },
+    paymentStatus: {
+      type: String,
+      enum: ['unpaid', 'paid', 'refunded'],
+      default: 'unpaid',
+    },
+    paymentIntentId: {
+      type: String,
+      default: null,
+    },
     startDate: {
       type: Date,
       required: true,

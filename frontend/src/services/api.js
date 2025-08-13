@@ -72,9 +72,31 @@ export const markNotificationAsRead = async (notificationId) => {
   return response.data;
 };
 
+// Mark all notifications as read
+export const markAllNotificationsAsRead = async () => {
+  const response = await API.put('/notifications/mark-all-read');
+  return response.data;
+};
+
+// Delete a single notification
+export const deleteNotification = async (notificationId) => {
+  const response = await API.delete(`/notifications/${notificationId}`);
+  return response.data;
+};
+
+// Delete all notifications
+export const deleteAllNotifications = async () => {
+  const response = await API.delete('/notifications/delete-all');
+  return response.data;
+};
+
 // Fitness Tracking API calls (New)
 export const getWorkouts = () => API.get('/workouts'); // Fetch all workouts for the logged-in user
 export const addWorkout = (workoutData) => API.post('/workouts', workoutData); // Add a new workout
 export const deleteWorkout = (workoutId) => API.delete(`/workouts/${workoutId}`); // Delete a workout
+
+// BMI and Recommendations API calls
+export const getBMIRecommendations = () => API.get('/recommendations/bmi-recommendations'); // Get BMI-based recommendations
+export const updatePhysicalData = (physicalData) => API.put('/recommendations/physical-data', physicalData); // Update height, weight, age, gender
 
 export default API;

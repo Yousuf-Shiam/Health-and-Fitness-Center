@@ -9,6 +9,11 @@ function ClientProfile() {
       email: '',
       fitnessGoals: '',
       preferences: '',
+      height: '',
+      weight: '',
+      age: '',
+      gender: '',
+      bmi: '',
     });
   
     const [isEditing, setIsEditing] = useState(false);

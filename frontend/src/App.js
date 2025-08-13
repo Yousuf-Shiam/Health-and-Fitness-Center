@@ -20,11 +20,17 @@ import CreateMealPlan from './pages/clients/createmealplan';
 import Mealplan from './pages/clients/Mealplan';
 import MealTracking from './pages/clients/mealtracking'; // Import the MealTracking component
 import FitnessTracking from './pages/clients/fitnesstracking'; // Import the FitnessTracking component
+import BMIRecommendations from './pages/clients/BMIRecommendations'; // Import the BMIRecommendations component
 import MealPlanReview from './pages/nutritionists/mealPlanReview';
 import Notifications from './pages/clients/Notifications';
+import TrainerNotifications from './pages/trainers/TrainerNotifications';
+import NutritionistNotifications from './pages/nutritionists/NutritionistNotifications';
+import AdminNotifications from './pages/admin/AdminNotifications';
 import BookedTrainings from './pages/trainers/bookedTrainings';
 import AdminLogin from './pages/admin/adminLogin';
 import AdminDashboard from './pages/admin/admin';
+import StripePayment from './pages/clients/StripePayment'; // Import Stripe Payment component
+import PaymentSuccess from './pages/clients/PaymentSuccess'; // Import Payment Success component
 
 function App() {
   return (
@@ -59,6 +65,9 @@ function App() {
         />
         <Route path="/payment" element={<Payment />} />
         <Route path="/demo-payment" element={<DemoPayment />} />
+        <Route path="/stripe-payment" element={<StripePayment />} />
+        <Route path="/stripe-payment/:bookingId" element={<StripePayment />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route
           path="/trainer-home"
           element={
@@ -149,6 +158,14 @@ function App() {
           }
         />
         <Route
+          path="/bmi-recommendations"
+          element={
+            <ProtectedRoute>
+              <BMIRecommendations />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/nutritionist-mealplan-review"
           element={
             <ProtectedRoute>
@@ -161,6 +178,30 @@ function App() {
           element={
             <ProtectedRoute>
               <Notifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/trainer-notifications"
+          element={
+            <ProtectedRoute>
+              <TrainerNotifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/nutritionist-notifications"
+          element={
+            <ProtectedRoute>
+              <NutritionistNotifications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-notifications"
+          element={
+            <ProtectedRoute>
+              <AdminNotifications />
             </ProtectedRoute>
           }
         />

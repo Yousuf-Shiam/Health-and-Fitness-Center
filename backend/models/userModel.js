@@ -28,6 +28,22 @@ const userSchema = mongoose.Schema(
     preferences: {
       type: String,
     },
+    height: {
+      type: Number, // height in cm
+    },
+    weight: {
+      type: Number, // weight in kg
+    },
+    bmi: {
+      type: Number,
+    },
+    age: {
+      type: Number,
+    },
+    gender: {
+      type: String,
+      enum: ['male', 'female', 'other'],
+    },
   },
   { timestamps: true }
 );

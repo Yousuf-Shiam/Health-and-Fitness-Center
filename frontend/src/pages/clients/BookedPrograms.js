@@ -98,6 +98,8 @@ const BookedPrograms = () => {
         alert('You must be logged in to update the booking status.');
         return;
       }
+
+      console.log('Canceling booking:', { bookingId, newStatus }); // Debug log
   
       const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}/status`, {
         method: 'PUT',
@@ -107,12 +109,14 @@ const BookedPrograms = () => {
         },
         body: JSON.stringify({ status: newStatus }),
       });
+
+      console.log('Response status:', response.status); // Debug log
+      const responseData = await response.json();
+      console.log('Response data:', responseData); // Debug log
   
       if (!response.ok) {
-        throw new Error('Failed to update booking status');
+        throw new Error(responseData.message || 'Failed to update booking status');
       }
-  
-      const updatedBooking = await response.json();
   
       // Update the booking's status in the state
       setBookings((prevBookings) =>
@@ -124,6 +128,7 @@ const BookedPrograms = () => {
       alert('Booking canceled successfully!');
     } catch (error) {
       console.error('Failed to update booking status:', error.message);
+      console.error('Full error:', error); // More detailed error log
       alert('Failed to update booking status. Please try again.');
     }
   };
@@ -136,6 +141,8 @@ const BookedPrograms = () => {
         alert('You must be logged in to update the booking status.');
         return;
       }
+
+      console.log('Updating booking status:', { bookingId, newStatus }); // Debug log
   
       const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}/status`, {
         method: 'PUT',
@@ -145,12 +152,14 @@ const BookedPrograms = () => {
         },
         body: JSON.stringify({ status: newStatus }),
       });
+
+      console.log('Response status:', response.status); // Debug log
+      const responseData = await response.json();
+      console.log('Response data:', responseData); // Debug log
   
       if (!response.ok) {
-        throw new Error('Failed to update booking status');
+        throw new Error(responseData.message || 'Failed to update booking status');
       }
-  
-      const updatedBooking = await response.json();
   
       // Update the booking's status in the state
       setBookings((prevBookings) =>
@@ -162,6 +171,7 @@ const BookedPrograms = () => {
       alert('Booking status updated successfully!');
     } catch (error) {
       console.error('Failed to update booking status:', error.message);
+      console.error('Full error:', error); // More detailed error log
       alert('Failed to update booking status. Please try again.');
     }
   };
@@ -238,8 +248,29 @@ const BookedPrograms = () => {
   };
 
   const handlePayment = (bookingId) => {
-    console.log(`Redirecting to payment for booking ID: ${bookingId}`);
-    navigate(`/payment/${bookingId}`); // Redirect to the payment page
+    console.log(`🔄 Redirecting to payment for booking ID: ${bookingId}`);
+    
+    // Find the booking to get program details
+    const booking = bookings.find(b => b._id === bookingId);
+    console.log('📋 Found booking:', booking);
+    
+    if (booking && booking.program) {
+        // Pass complete payment data including correct amount
+        const paymentData = {
+            amount: booking.program.price || 100,
+            programName: booking.program.name || 'Health & Fitness Program',
+            programId: booking.program._id,
+            bookingId: bookingId,
+            clientName: user?.name || 'Client',
+            description: `Payment for ${booking.program.name || 'fitness program'}`
+        };
+        
+        console.log('💳 Payment data being passed:', paymentData);
+        navigate(`/payment/${bookingId}`, { state: paymentData });
+    } else {
+        console.error('❌ Booking or program details not found');
+        navigate(`/payment/${bookingId}`); // Fallback to default
+    }
 }
 
   if (loading) {
@@ -277,6 +308,7 @@ const BookedPrograms = () => {
             <p>Price: ${booking.program?.price || 'N/A'}</p>
             <p>Starting Date: {booking.startDate ? new Date(booking.startDate).toLocaleDateString() : 'N/A'}</p>
             <p>Status: {booking.status}</p>
+            <p>Payment Status: {booking.paymentStatus || 'unpaid'}</p>
             {booking.status === 'cancelled' ? (
               <>
                 <button
@@ -294,12 +326,20 @@ const BookedPrograms = () => {
               </>
             ) : booking.status === 'confirmed' ? (
               <>
-                <button
-                  onClick={() => handlePayment(booking._id)}
-                  style={styles.paymentButton}
-                >
-                  Pay Now
-                </button>
+                {booking.paymentStatus !== 'paid' && (
+                  <button
+                    onClick={() => handlePayment(booking._id)}
+                    style={styles.paymentButton}
+                  >
+                    Pay Now
+                  </button>
+                )}
+
+                {booking.paymentStatus === 'paid' && (
+                  <div style={styles.paidBadge}>
+                    ✅ Payment Completed
+                  </div>
+                )}
 
                 <button
                   onClick={() => handleUpdateStatus(booking._id, 'pending')}
@@ -462,6 +502,17 @@ const styles = {
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
+  },
+  paidBadge: {
+    padding: '0.5rem 1rem',
+    marginTop: '0.5rem',
+    backgroundColor: '#28a745',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '4px',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    display: 'inline-block',
   },
   modalOverlay: {
     position: 'fixed',
