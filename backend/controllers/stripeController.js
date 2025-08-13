@@ -12,7 +12,7 @@ const getStripe = () => {
 const createPaymentIntent = async (req, res) => {
     try {
         const stripe = getStripe();
-        const { amount, currency = 'usd', paymentMethodType = 'card', programId, clientId, programName } = req.body;
+        const { amount, currency = 'usd', paymentMethodType = 'card', programId, clientId, programName, bookingId } = req.body;
 
         if (!amount || !programId || !clientId) {
             return res.status(400).json({ 
@@ -28,7 +28,8 @@ const createPaymentIntent = async (req, res) => {
             metadata: {
                 programId: programId.toString(),
                 clientId: clientId.toString(),
-                programName: programName || 'Health & Fitness Program'
+                programName: programName || 'Health & Fitness Program',
+                bookingId: bookingId ? bookingId.toString() : null
             },
         });
 
@@ -64,6 +65,29 @@ const confirmPayment = async (req, res) => {
 
         if (paymentIntent.status === 'succeeded') {
             console.log('✅ Payment confirmed successfully:', paymentIntentId);
+            
+            // Update booking status in database
+            if (bookingId) {
+                try {
+                    const Booking = require('../models/bookingModel');
+                    const updatedBooking = await Booking.findByIdAndUpdate(
+                        bookingId,
+                        { 
+                            paymentStatus: 'paid', 
+                            paymentIntentId: paymentIntentId
+                        },
+                        { new: true }
+                    );
+                    
+                    if (updatedBooking) {
+                        console.log('✅ Booking payment status updated via confirm-payment:', bookingId);
+                    } else {
+                        console.log('⚠️ Booking not found for update:', bookingId);
+                    }
+                } catch (bookingError) {
+                    console.error('❌ Error updating booking status:', bookingError);
+                }
+            }
             
             // Generate receipt if all required data is provided
             if (bookingId && clientName && serviceName && amount) {
@@ -248,19 +272,34 @@ const handleSuccessfulPayment = async (paymentIntent) => {
     try {
         const { metadata } = paymentIntent;
         
-        // Update booking status in your database
-        if (metadata.programId && metadata.clientId) {
-            console.log('📝 Updating booking status for:', {
+        console.log('📝 Processing successful payment with metadata:', metadata);
+        
+        // Import Booking model
+        const Booking = require('../models/bookingModel');
+        
+        let updatedBooking = null;
+        
+        // First try to update by specific bookingId if available
+        if (metadata.bookingId) {
+            console.log('🎯 Updating booking by specific ID:', metadata.bookingId);
+            updatedBooking = await Booking.findByIdAndUpdate(
+                metadata.bookingId,
+                { 
+                    paymentStatus: 'paid', 
+                    paymentIntentId: paymentIntent.id,
+                },
+                { new: true }
+            );
+        }
+        
+        // Fallback to program + client matching if specific booking ID failed
+        if (!updatedBooking && metadata.programId && metadata.clientId) {
+            console.log('🔍 Fallback: Finding booking by program + client:', {
                 programId: metadata.programId,
-                clientId: metadata.clientId,
-                programName: metadata.programName
+                clientId: metadata.clientId
             });
             
-            // Import Booking model
-            const Booking = require('../models/bookingModel');
-            
-            // Find and update the booking
-            const updatedBooking = await Booking.findOneAndUpdate(
+            updatedBooking = await Booking.findOneAndUpdate(
                 { 
                     program: metadata.programId, 
                     client: metadata.clientId,
@@ -272,12 +311,12 @@ const handleSuccessfulPayment = async (paymentIntent) => {
                 },
                 { new: true }
             );
-            
-            if (updatedBooking) {
-                console.log('✅ Booking payment status updated:', updatedBooking._id);
-            } else {
-                console.log('⚠️ No matching unpaid booking found');
-            }
+        }
+        
+        if (updatedBooking) {
+            console.log('✅ Booking payment status updated:', updatedBooking._id);
+        } else {
+            console.error('❌ No matching booking found for payment:', metadata);
         }
 
         // Generate and store receipt

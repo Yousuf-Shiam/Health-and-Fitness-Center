@@ -39,6 +39,7 @@ const BookedPrograms = () => {
         }
 
         const data = await response.json(); // Parse the JSON response
+        console.log('📦 Fetched bookings:', data); // Debug log
         setBookings(data); // Set the bookings in state
       } catch (error) {
         console.error('Failed to fetch bookings:', error.message);
@@ -48,6 +49,15 @@ const BookedPrograms = () => {
     };
 
     fetchBookings();
+
+    // Refresh bookings when user returns to this page (e.g., after payment)
+    const handleFocus = () => {
+      console.log('🔄 Page focused, refreshing bookings...');
+      fetchBookings();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, []);
   
   const handleReschedule = async () => {
@@ -273,6 +283,27 @@ const BookedPrograms = () => {
     }
 }
 
+  const refreshBookings = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/bookings', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log('🔄 Bookings refreshed:', data);
+        setBookings(data);
+      }
+    } catch (error) {
+      console.error('Failed to refresh bookings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return <p>Loading bookings...</p>;
   }
@@ -284,7 +315,23 @@ const BookedPrograms = () => {
     <>
       <ClientNavBar user={user} /> {/* Pass the user information to the navbar */}
     <div style={styles.container}>
-      <h1 style={styles.heading}>All Bookings</h1>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
+        <h1 style={styles.heading}>All Bookings</h1>
+        <button 
+          onClick={refreshBookings} 
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#0f5132',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}
+        >
+          🔄 Refresh
+        </button>
+      </div>
 
       {bookings.length === 0 ? (
         <p>No bookings found.</p>

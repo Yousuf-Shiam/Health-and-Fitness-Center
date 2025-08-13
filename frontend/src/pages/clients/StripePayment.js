@@ -114,7 +114,8 @@ const StripePayment = () => {
                     paymentMethodType: 'card',
                     programId: programData.programId,
                     clientId: user.id || 'demo-client',
-                    programName: programData.programName
+                    programName: programData.programName,
+                    bookingId: programData.bookingId
                 }),
             });
 
@@ -150,7 +151,7 @@ const StripePayment = () => {
                 },
                 body: JSON.stringify({
                     paymentIntentId: paymentIntent.id,
-                    bookingId: program?.bookingId || `booking-${Date.now()}`,
+                    bookingId: bookingId, // Use the actual booking ID from URL params
                     clientName: program?.clientName || 'Client',
                     serviceName: program?.programName,
                     amount: program?.amount || 100
