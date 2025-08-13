@@ -471,3 +471,47 @@ exports.getUserNotifications = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch user notifications' });
   }
 };
+
+// Send payment completion notification
+exports.sendPaymentCompletionNotification = async (userId, programName, amount, paymentIntentId, bookingId) => {
+  try {
+    const title = 'Payment Successful! 🎉';
+    const message = `Your payment of $${amount} for "${programName}" has been processed successfully. Transaction ID: ${paymentIntentId.slice(-8)}`;
+
+    await Notification.create({
+      userId,
+      title,
+      message,
+      type: 'payment_success',
+      relatedId: bookingId,
+      relatedModel: 'Booking',
+      hasActions: false,
+      isActionable: false,
+    });
+
+    console.log('✅ Payment completion notification sent to user:', userId);
+  } catch (error) {
+    console.error('❌ Error sending payment completion notification:', error.message);
+  }
+};
+
+// Send payment failure notification
+exports.sendPaymentFailureNotification = async (userId, programName, amount, error) => {
+  try {
+    const title = 'Payment Failed ❌';
+    const message = `Your payment of $${amount} for "${programName}" could not be processed. Please try again or contact support. Error: ${error}`;
+
+    await Notification.create({
+      userId,
+      title,
+      message,
+      type: 'payment_failed',
+      hasActions: false,
+      isActionable: false,
+    });
+
+    console.log('⚠️ Payment failure notification sent to user:', userId);
+  } catch (error) {
+    console.error('❌ Error sending payment failure notification:', error.message);
+  }
+};

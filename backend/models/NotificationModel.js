@@ -17,7 +17,7 @@ const notificationSchema = mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['session', 'meal_plan', 'achievement', 'booking_confirmation', 'booking_request'],
+      enum: ['session', 'meal_plan', 'achievement', 'booking_confirmation', 'booking_request', 'payment_success', 'payment_failed'],
       required: true,
     },
     relatedId: {

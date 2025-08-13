@@ -75,12 +75,33 @@ const NotificationItem = ({ notification, onAction, onMarkAsRead, onDelete }) =>
     }
   };
 
-  return (
-    <div style={{
+  const getNotificationStyle = () => {
+    const baseStyle = {
       padding: '12px',
       borderBottom: '1px solid #eee',
       backgroundColor: notification.isRead ? '#f8f9fa' : '#fff',
-    }}>
+    };
+
+    // Special styling for payment notifications
+    if (notification.type === 'payment_success') {
+      return {
+        ...baseStyle,
+        backgroundColor: notification.isRead ? '#e8f5e8' : '#f0fff0',
+        borderLeft: '4px solid #28a745',
+      };
+    } else if (notification.type === 'payment_failed') {
+      return {
+        ...baseStyle,
+        backgroundColor: notification.isRead ? '#fce8e6' : '#fff5f5',
+        borderLeft: '4px solid #dc3545',
+      };
+    }
+
+    return baseStyle;
+  };
+
+  return (
+    <div style={getNotificationStyle()}>
       <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: 'bold' }}>
         {notification.title}
       </h4>

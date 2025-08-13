@@ -77,10 +77,20 @@ const confirmPayment = async (req, res) => {
                             paymentIntentId: paymentIntentId
                         },
                         { new: true }
-                    );
+                    ).populate('client', 'name').populate('program', 'name');
                     
                     if (updatedBooking) {
                         console.log('✅ Booking payment status updated via confirm-payment:', bookingId);
+                        
+                        // Send payment completion notification
+                        const { sendPaymentCompletionNotification } = require('./notificationController');
+                        await sendPaymentCompletionNotification(
+                            updatedBooking.client._id,
+                            updatedBooking.program.name,
+                            amount,
+                            paymentIntentId,
+                            bookingId
+                        );
                     } else {
                         console.log('⚠️ Booking not found for update:', bookingId);
                     }
@@ -315,6 +325,26 @@ const handleSuccessfulPayment = async (paymentIntent) => {
         
         if (updatedBooking) {
             console.log('✅ Booking payment status updated:', updatedBooking._id);
+            
+            // Send payment completion notification via webhook
+            try {
+                const { sendPaymentCompletionNotification } = require('./notificationController');
+                const populatedBooking = await Booking.findById(updatedBooking._id)
+                    .populate('client', 'name')
+                    .populate('program', 'name');
+                
+                if (populatedBooking) {
+                    await sendPaymentCompletionNotification(
+                        populatedBooking.client._id,
+                        populatedBooking.program.name,
+                        paymentIntent.amount / 100,
+                        paymentIntent.id,
+                        populatedBooking._id
+                    );
+                }
+            } catch (notificationError) {
+                console.error('❌ Error sending webhook payment notification:', notificationError);
+            }
         } else {
             console.error('❌ No matching booking found for payment:', metadata);
         }
