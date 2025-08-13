@@ -96,7 +96,7 @@ function HomePage() {
         <div style={styles.leftSection}>
           <h1 style={styles.heading}>Welcome to the Health and Fitness Center</h1>
           <p style={styles.subheading}>
-            Achieve your fitness goals with personalized programs and expert guidance.
+            Achieve your fitness goals with personalized programs and expert guidance!
           </p>
           <button
             style={styles.button}
