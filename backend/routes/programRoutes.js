@@ -7,7 +7,7 @@ const { protect } = require('../middleware/authMiddleware');
 // @route   POST /api/programs
 // @access  Private (Trainer/Nutritionist)
 router.post('/', protect, async (req, res) => {
-  const { name, description, price, duration, role } = req.body;
+  const { name, description, price, duration, role , goals} = req.body;
 
   if (!name || !description || !price || !duration || !role) {
     return res.status(400).json({ message: 'All fields are required' });
@@ -20,6 +20,7 @@ router.post('/', protect, async (req, res) => {
       price,
       duration,
       role,
+      goals,
       creator: req.user._id, // Ensure the user is authenticated
     });
 

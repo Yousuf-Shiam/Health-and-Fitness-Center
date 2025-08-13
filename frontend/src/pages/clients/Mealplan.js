@@ -230,6 +230,8 @@ function Mealplan() {
                     {plan.mealPlan.map((meal, mealIndex) => (
                       <li key={mealIndex}>
                         <strong>{meal.meal}</strong>: {meal.items.join(', ')}
+                        <p><strong>Calories:</strong> {meal.calories} kcal</p>
+                        <p><strong>Recommendation:</strong> {meal.recommendation || 'No recommendation provided'}</p>
                       </li>
                     ))}
                   </ul>

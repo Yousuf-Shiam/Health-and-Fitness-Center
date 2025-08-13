@@ -18,6 +18,9 @@ const programSchema = mongoose.Schema(
       type: Number, // Duration in weeks
       required: true,
     },
+    goals: {
+      type: String,
+    },
     role: {
       type: String,
       enum: ['trainer', 'nutritionist'], // Role of the creator

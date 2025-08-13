@@ -421,38 +421,41 @@ function ClientHomePage() {
               </span>
             </h2>
             {!collapsedSections.programs && (
-              <>
-                {/* Search Bar */}
-                <input
-                  type="text"
-                  placeholder="Search programs..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  style={styles.searchBar}
-                />
+              <> 
+                  <input
+                    type="text"
+                    placeholder="Search programs by name or goals..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={styles.searchBar}
+                  />
 
-                {/* Display Filtered Programs */}
-                {fitnessPrograms
-                  .filter((program) =>
-                    program.name.toLowerCase().includes(searchQuery.toLowerCase())
-                  )
-                  .map((program) => (
+                  {/* Display Filtered Programs */}
+                  {fitnessPrograms
+                    .filter((program) =>
+                    (program.name && program.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                    (program.goals && program.goals.toLowerCase().includes(searchQuery.toLowerCase()))
+                    )
+                    .map((program) => (
                     <div key={program._id} style={styles.item}>
                       <h3>{program.name}</h3>
 
                       <p>
-                        {program.creator.role === 'trainer' ? (
-                          <>
-                            <p>Trainer: {program.creator.name}</p>
-                          </>
-                        ) : program.creator.role === 'nutritionist' ? (
-                          <p>Nutritionist: {program.creator.name}</p>
-                        ) : null}
+                      {program.creator.role === 'trainer' ? (
+                        <>
+                        <p>Trainer: {program.creator.name}</p>
+                        </>
+                      ) : program.creator.role === 'nutritionist' ? (
+                        <p>Nutritionist: {program.creator.name}</p>
+                      ) : null}
                       </p>
 
                       <p>Description: {program.description}</p>
                       <p>Duration: {program.duration} weeks</p>
                       <p>Price: ${program.price}</p>
+                      <p>Goals: {program.goals}</p>
+
+                      {/* Date Picker and Booking Button */}
                       <p>
                         Select Starting Date:{' '}
                         <input

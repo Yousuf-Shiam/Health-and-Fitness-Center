@@ -9,6 +9,7 @@ function NutritionistProgramCreation() {
     description: '',
     price: '',
     duration: '',
+    goals: '', // Add goals field
   });
 
   const [message, setMessage] = useState('');
@@ -151,6 +152,15 @@ function NutritionistProgramCreation() {
             onChange={handleChange}
             style={styles.input}
             placeholder="Duration (in weeks)"
+            required
+          />
+          <input
+            type="text"
+            name="goals"
+            value={programData.goals}
+            onChange={handleChange}
+            style={styles.input}
+            placeholder="Goals (e.g., weight loss, muscle gain)"
             required
           />
           <button

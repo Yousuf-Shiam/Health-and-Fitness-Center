@@ -26,6 +26,8 @@ const mealplanSchema = mongoose.Schema(
       {
         meal: { type: String, required: true },
         items: { type: [String], required: true },
+        calories: { type: Number, default: 0 }, // New field for calorie intake
+        recommendation: { type: String, default: '' }, // New field for meal-specific recommendation
       },
     ],
     creator: {

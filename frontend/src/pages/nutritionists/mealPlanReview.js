@@ -184,7 +184,7 @@ function MealPlanReview() {
   };
 
   const handleAddMeal = () => {
-    const newMeal = { meal: '', items: [] };
+    const newMeal = { meal: '', items: [], calories: '', recommendation: '' }; // Add calories and recommendation fields
     setUpdatedMealPlan({
       ...updatedMealPlan,
       mealPlan: [...updatedMealPlan.mealPlan, newMeal],
@@ -276,43 +276,109 @@ function MealPlanReview() {
                   </p>
                 </div>
                 <div style={styles.modalSection}>
-                  <h3 style={{textAlign : "center", marginTop: "7%", backgroundColor: 'rgb(216, 255, 215)' }}>Meals</h3>
+                  <h3 style={{ textAlign: 'center', marginTop: '7%', backgroundColor: 'rgb(216, 255, 215)' }}>Meals</h3>
                   {updatedMealPlan.mealPlan.map((meal, index) => (
-                    <div key={index} style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '0rem' }}>
-                      {/* Left Section: Meal Name */}
-                      <div style={{ flex: 1, marginRight: '1rem' }}>
-                        <label style={{ fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>Meal Name:</label>
-                        <input
-                          type="text"
-                          value={meal.meal}
-                          onChange={(e) => handleUpdateMealPlan(index, 'meal', e.target.value)}
-                          style={styles.textarea}
-                        />
+                    <div
+                      key={index}
+                      style={{
+                        border: '1px solid #ccc',
+                        borderRadius: '8px',
+                        padding: '1rem',
+                        marginBottom: '1rem',
+                        backgroundColor: '#f9f9f9',
+                      }}
+                    >
+                      <h4 style={{ marginBottom: '1rem', color: '#333' }}>Meal {index + 1}</h4>
+
+                      {/* Row 1: Meal Name and Items */}
+                      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+                        {/* Meal Name */}
+                        <div style={{ flex: 1 }}>
+                          <label style={{ fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>
+                            Meal Name <span style={{ color: 'red' }}>*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={meal.meal}
+                            onChange={(e) => handleUpdateMealPlan(index, 'meal', e.target.value)}
+                            style={{ ...styles.textarea, height: '40px' }}
+                            placeholder="Enter meal name (e.g., Breakfast)"
+                          />
+                        </div>
+
+                        {/* Meal Items */}
+                        <div style={{ flex: 2 }}>
+                          <label style={{ fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>
+                            Meal Items <span style={{ color: 'red' }}>*</span>
+                          </label>
+                          <textarea
+                            value={meal.items.join(', ')}
+                            onChange={(e) =>
+                              handleUpdateMealPlan(index, 'items', e.target.value.split(',').map((item) => item.trim()))
+                            }
+                            style={styles.textarea}
+                            placeholder="Enter items separated by commas (e.g., Eggs, Toast, Orange Juice)"
+                          />
+                        </div>
                       </div>
 
-                      {/* Right Section: Meal Items */}
-                      <div style={{ flex: 2 }}>
-                        <label style={{ fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>Meal Items:</label>
-                        <textarea
-                          value={meal.items.join(', ')}
-                          onChange={(e) =>
-                            handleUpdateMealPlan(index, 'items', e.target.value.split(',').map((item) => item.trim()))
-                          }
-                          style={styles.textarea}
-                        />
+                      {/* Row 2: Calorie Intake and Recommendation */}
+                      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+                        {/* Calorie Intake */}
+                        <div style={{ flex: 1 }}>
+                          <label style={{ fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>
+                            Calorie Intake (kcal)
+                          </label>
+                          <input
+                            type="number"
+                            value={meal.calories}
+                            onChange={(e) => handleUpdateMealPlan(index, 'calories', e.target.value)}
+                            style={{ ...styles.textarea, height: '40px' }}
+                            placeholder="Enter calorie intake (e.g., 350)"
+                          />
+                        </div>
+
+                        {/* Meal Recommendation */}
+                        <div style={{ flex: 2 }}>
+                          <label style={{ fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>
+                            Recommendation
+                          </label>
+                          <textarea
+                            value={meal.recommendation}
+                            onChange={(e) => handleUpdateMealPlan(index, 'recommendation', e.target.value)}
+                            style={styles.textarea}
+                            placeholder="Add a recommendation for this meal (e.g., Avoid sugary drinks)"
+                          />
+                        </div>
                       </div>
 
                       {/* Remove Meal Button */}
                       <button
-                        style={{ ...styles.removeButton, marginLeft: '1rem', alignSelf: 'center' }}
+                        style={{
+                          ...styles.removeButton,
+                          alignSelf: 'flex-start',
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
                         onClick={() => handleRemoveMeal(index)}
                       >
-                        Remove Meal
+                        <span style={{ marginRight: '5px' }}>🗑️</span> Remove Meal
                       </button>
                     </div>
                   ))}
-                  <button style={{...styles.modalButtonAdd, marginLeft : "45%", marginBottom : "3%"}} onClick={handleAddMeal}>
-                    Add Meal
+
+                  {/* Add Meal Button */}
+                  <button
+                    style={{
+                      ...styles.modalButtonAdd,
+                      marginLeft: '45%',
+                      marginBottom: '3%',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                    onClick={handleAddMeal}
+                  >
+                    <span style={{ marginRight: '5px' }}>➕</span> Add Meal
                   </button>
                 </div>
 
